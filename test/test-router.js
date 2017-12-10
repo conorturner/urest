@@ -8,7 +8,9 @@ describe("Test Router", () => {
 
 		const userRouter = new Router();
 
-		userRouter.pre((res,req, next) => next());
+		userRouter.pre((res,req, next) => {
+			next()
+		});
 
 		userRouter.get("/user/:user_id/friend/:friend_id", (req, res, next) => {
 			res.send({user_id: req.params.user_id});

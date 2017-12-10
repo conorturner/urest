@@ -11,7 +11,7 @@ class Router {
 		if(!(path && router)) throw new Error("Provide both path and router");
 
 		router.routes.forEach(route => {
-			router.middleware.forEach(middleware => route.handlers.push(middleware));
+			route.handlers = router.middleware.concat(route.handlers);
 			this.routes.push(Object.assign({}, route, {path: path + route.path}))
 		});
 	}
