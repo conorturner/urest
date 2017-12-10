@@ -1,0 +1,56 @@
+"use strict";
+
+class Router {
+
+	constructor() {
+		this.routes = [];
+		this.middleware = [];
+	}
+
+	use (path, router) {
+		if(!(path && router)) throw new Error("Provide both path and router");
+
+		router.routes.forEach(route => {
+			router.middleware.forEach(middleware => route.handlers.push(middleware));
+			this.routes.push(Object.assign({}, route, {path: path + route.path}))
+		});
+	}
+
+	pre (middleware) {
+		this.middleware.push(middleware);
+	}
+
+	get (){
+		this._addRoute("get", arguments);
+	}
+
+	put (){
+		this._addRoute("put", arguments);
+	}
+
+	post (){
+		this._addRoute("post", arguments);
+	}
+
+	delete (){
+		this._addRoute("delete", arguments);
+	}
+
+	_addRoute (method, args) {
+		if(typeof args[0] !== "string") throw new Error("first arg must be string");
+		const [path, ...handlers] = args;
+
+		const tokens = path
+			.split("/")
+			.filter(token => token !== "")
+			.map(token => token.startsWith(":") ? {param: token.substr(1)} : token);
+
+		const regexString = "\\/" + tokens.map(token => typeof token === "object" ? "([^\\/]+)" : token).join("\\/");
+		const regex = new RegExp(regexString);
+
+		this.routes.push({regex, method, path, handlers});
+	}
+
+}
+
+module.exports = Router;
