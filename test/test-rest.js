@@ -9,7 +9,7 @@ describe("Test Router", () => {
 
 		const userRouter = new Router();
 		userRouter.pre((res,req, next) => next());
-		userRouter.get("/user/:user_id/friend/:friend_id", (req, res, next) => res.send({user_id: req.params.user_id}));
+		userRouter.get("/user/:user_id/friend/:friend_id", (req, res, next) => res.send(req.params));
 
 		const app = new Rest();
 
@@ -18,8 +18,7 @@ describe("Test Router", () => {
 
 		const mockReq = {
 			path: "/user/1/friend/2",
-			method: "GET",
-			params: {}
+			method: "GET"
 		};
 
 		const mockRes = {

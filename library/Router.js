@@ -48,7 +48,7 @@ class Router {
 		const regexString = "\\/" + tokens.map(token => typeof token === "object" ? "([^\\/]+)" : token).join("\\/");
 		const regex = new RegExp(regexString);
 
-		this.routes.push({regex, method, path, handlers});
+		this.routes.push({regex, tokens, method, path, handlers});
 	}
 
 }
