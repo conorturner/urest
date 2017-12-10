@@ -49,7 +49,7 @@ class Rest extends Router {
 
 		let i = 0;
 		const next = (err) => {
-			if (err) return this.onError(err, req, res);
+			if (err) return Rest.onError(err, req, res);
 			i++;
 			runHandler(next, i);
 		};
@@ -57,7 +57,7 @@ class Rest extends Router {
 		runHandler(next, i);
 	}
 
-	onError(err, req, res) {
+	static onError(err, req, res) {
 		req.log.error(err);
 
 		const body = {
