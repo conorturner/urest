@@ -1,0 +1,14 @@
+{
+  "name": "gcf-rest",
+  "version": "0.0.1",
+  "description": "rest framework for google cloud functions",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha test"
+  },
+  "keywords": [
+    "rest"
+  ],
+  "author": "Conor Turner",
+  "license": "ISC"
+}
