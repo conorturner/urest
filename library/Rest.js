@@ -1,15 +1,19 @@
 "use strict";
 
 const Router = require("./Router");
+const bunyan = require("bunyan");
+const uuidv4 = require("uuid/v4");
 
 class Rest extends Router {
 	constructor({name} = {}) {
 		super();
 		this.name = name;
-		this.onErrorFunctor = (err) => console.error(err);
+		this.log = new bunyan.createLogger({name, serializers: {req: bunyan.stdSerializers.req}});
 	}
 
 	query(req, res) {
+		this.log.info({req});
+		req.log = this.log.child({req_id: uuidv4()});
 
 		const {method: reqMethod, path: reqPath} = req;
 
@@ -26,25 +30,25 @@ class Rest extends Router {
 		this.runHandlers(req, res, handlers);
 	}
 
-	getParams (match, tokens) {
+	getParams(match, tokens) {
 		return tokens
 			.filter(token => typeof token === "object")
 			.map(({param}) => param)
 			.reduce((acc, param, index) => {
-			acc[param] = match[index +1];
-			return acc;
-		}, {});
+				acc[param] = match[index + 1];
+				return acc;
+			}, {});
 	}
 
-	runHandlers (req, res, handlers) {
+	runHandlers(req, res, handlers) { // This is special, lol
 		const runHandler = (next, i) => {
 			const handler = handlers[i];
-			if(handler) handler(req, res, next);
+			if (handler) handler(req, res, next);
 		};
 
 		let i = 0;
 		const next = (err) => {
-			if(err) return this.onErrorFunctor(err);
+			if (err) return this.onError(err, req, res);
 			i++;
 			runHandler(next, i);
 		};
@@ -52,8 +56,15 @@ class Rest extends Router {
 		runHandler(next, i);
 	}
 
-	onError(functor){
-		this.onErrorFunctor = functor;
+	onError(err, req, res) {
+		this.log.error(err);
+
+		const body = {
+			code: err.code,
+			eid: err.uuid
+		};
+
+		res.status(err.statusCode).send(body);
 	}
 
 }

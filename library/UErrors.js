@@ -8,7 +8,7 @@ module.exports = ({uuidv4}) => {
 		acc[`U${key}`] = function (details) {
 			const uuid = uuidv4();
 			const error = new restifyErrors[key](details);
-			return Object.assign(error, {toString: () => uuid, message: `${uuid} ` + (error.message || "")});
+			return Object.assign(error, {uuid, message: `${uuid} ` + (error.message || "")});
 		};
 
 		return acc;
