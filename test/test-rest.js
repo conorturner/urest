@@ -1,5 +1,7 @@
 "use strict";
 
+const {expect} = require("chai");
+
 const Rest = require("../library/Rest");
 const Router = require("../library/Router");
 
@@ -70,7 +72,7 @@ describe("Test Router", () => {
 
 		const mockRes = {
 			status: (status) => {
-				console.log(status);
+				expect(status).to.equal(500);
 				return mockRes;
 			},
 			send: (data) => {

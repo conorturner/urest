@@ -12,8 +12,9 @@ class Rest extends Router {
 	}
 
 	query(req, res) {
-		this.log.info({req});
-		req.log = this.log.child({req_id: uuidv4()});
+		const req_id = uuidv4();
+		this.log.info({req: Object.assign({req_id}, req)});
+		req.log = this.log.child({req_id});
 
 		const {method: reqMethod, path: reqPath} = req;
 
@@ -57,7 +58,7 @@ class Rest extends Router {
 	}
 
 	onError(err, req, res) {
-		this.log.error(err);
+		req.log.error(err);
 
 		const body = {
 			code: err.code,
