@@ -2,10 +2,9 @@
 
 const {expect} = require("chai");
 
-const Rest = require("../library/Rest");
-const Router = require("../library/Router");
+const {Rest, Router} = require("../index");
 
-describe("Test Router", () => {
+describe("Test Rest", () => {
 
 	it("Basic App", (done) => {
 

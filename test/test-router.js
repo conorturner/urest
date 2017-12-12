@@ -1,6 +1,6 @@
 "use strict";
 
-const Router = require("../library/Router");
+const {Router} = require("../index");
 
 describe("Test Router", () => {
 
