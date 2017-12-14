@@ -1,22 +1,22 @@
 "use strict";
 
 const Router = require("./Router");
-const bunyan = require("bunyan");
 const uuidv4 = require("uuid/v4");
+const Log = require("./Log");
 
 class Rest extends Router {
-	constructor({name} = {}) {
+	constructor({name = process.env.FUNCTION_NAME} = {}) {
 		super();
 		this.name = name;
-		this.log = new bunyan.createLogger({name, serializers: {req: bunyan.stdSerializers.req}});
 	}
 
 	query(req, res) {
-		const req_id = uuidv4();
-		this.log.info({req: Object.assign({req_id}, req)});
-		req.log = this.log.child({req_id});
+		const log = new Log(req.headers);
+		log.info({event: "Request", method: req.method, path: req.path || req.url});
+		req.log = log;
 
-		const {method: reqMethod, path: reqPath} = req;
+		const reqUrl = req.url;
+		const {method: reqMethod, path: reqPath = reqUrl} = req;
 
 		const matched = this.routes
 			.filter(({method}) => method === reqMethod.toLowerCase())
