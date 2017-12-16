@@ -12,7 +12,7 @@ class Router {
 
 		router.routes.forEach(route => {
 			route.handlers = router.middleware.concat(route.handlers);
-			this.routes.push(Object.assign({}, route, {path: path + route.path}))
+			this.routes.push(Object.assign({}, route, {path: path + route.path}, Router.parseRoute(path + route.path)))
 		});
 	}
 
@@ -40,15 +40,22 @@ class Router {
 		if(typeof args[0] !== "string") throw new Error("first arg must be string");
 		const [path, ...handlers] = args;
 
+		const {tokens, regex} = Router.parseRoute(path);
+
+		this.routes.push({regex, tokens, method, path, handlers});
+	}
+
+	static parseRoute (path) {
 		const tokens = path
 			.split("/")
 			.filter(token => token !== "")
 			.map(token => token.startsWith(":") ? {param: token.substr(1)} : token);
 
+
 		const regexString = "\\/" + tokens.map(token => typeof token === "object" ? "([^\\/]+)" : token).join("\\/");
 		const regex = new RegExp(regexString);
 
-		this.routes.push({regex, tokens, method, path, handlers});
+		return {regex, tokens};
 	}
 
 }

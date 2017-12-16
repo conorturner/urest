@@ -56,7 +56,7 @@ describe("Test Rest", () => {
 			}
 		};
 
-		app.urest(mockReq, mockRes);
+		app.query(mockReq, mockRes);
 
 	});
 
@@ -71,7 +71,7 @@ describe("Test Rest", () => {
 			next()
 		});
 
-		userRouter.get("/user/:user_id/friend/:friend_id", (req, res, next) => {
+		userRouter.get("/:user_id/friend/:friend_id", (req, res, next) => {
 			// res.send(Object.assign(req.params, req.headers))
 			next(new UInternalServerError(":("));
 
