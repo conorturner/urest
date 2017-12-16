@@ -10,7 +10,7 @@ class Rest extends Router {
 		this.name = name;
 	}
 
-	query(req, res) {
+	urest(req, res) {
 		const log = new Log(req.headers);
 		log.info({event: "Request", method: req.method, path: req.path || req.url});
 		req.log = log;

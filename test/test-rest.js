@@ -56,7 +56,7 @@ describe("Test Rest", () => {
 			}
 		};
 
-		app.query(mockReq, mockRes);
+		app.urest(mockReq, mockRes);
 
 	});
 
