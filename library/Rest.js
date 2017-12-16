@@ -68,6 +68,9 @@ class Rest extends Router {
 		res.status(err.statusCode).send(body);
 	}
 
+	getEnv (){
+
+	}
 }
 
 module.exports = Rest;

@@ -1,7 +1,7 @@
 "use strict";
 
 const {
-	NODE_ENV = "development",
+	NODE_ENV = "develop",
 	FUNCTION_NAME
 } = process.env;
 
@@ -56,7 +56,8 @@ class Log {
 			service: FUNCTION_NAME,
 			environment: NODE_ENV,
 			city: this.city,
-			country: this.country
+			country: this.country,
+			user_ip: this.user_ip
 		};
 	}
 }
