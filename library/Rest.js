@@ -1,7 +1,6 @@
 "use strict";
 
 const Router = require("./Router");
-const uuidv4 = require("uuid/v4");
 const Log = require("./Log");
 
 class Rest extends Router {
