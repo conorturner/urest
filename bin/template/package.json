@@ -1,0 +1,22 @@
+{
+  "name": "service",
+  "version": "0.0.1",
+  "description": "a service",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha test --recursive"
+  },
+  "keywords": [
+    "service"
+  ],
+  "author": "Conor Turner",
+  "license": "ISC",
+  "dependencies": {
+    "@blog-agency/environment": "^2.0.2",
+    "@blog-agency/urest": "^2.1.0"
+  },
+  "devDependencies": {
+    "chai": "^4.1.2",
+    "mocha": "^4.0.1"
+  }
+}
