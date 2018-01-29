@@ -67,26 +67,6 @@ class Rest extends Router {
 		res.status(err.statusCode).send(body);
 	}
 
-	getEnv (runningDir){
-		let environment, secrets;
-
-		try {
-			environment = require(runningDir + "/environment.json");
-		}
-		catch (e) {
-			environment = {};
-		}
-
-		try {
-			secrets = require(runningDir + "/secrets.json");
-		}
-		catch (e) {
-			secrets = {};
-		}
-
-		return Object.assign({}, process.env, secrets, environment);
-	}
-
 	export () {
 		return {urest: (req, res) => this.query(req,res)};
 	}
