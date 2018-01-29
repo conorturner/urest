@@ -1,6 +1,6 @@
 {
   "name": "@blog-agency/urest",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "rest framework for google cloud functions",
   "main": "index.js",
   "scripts": {

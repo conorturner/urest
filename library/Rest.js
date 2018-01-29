@@ -70,6 +70,10 @@ class Rest extends Router {
 	getEnv (){
 
 	}
+
+	export () {
+		return {urest: (req, res) => this.query(req,res)};
+	}
 }
 
 module.exports = Rest;
