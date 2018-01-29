@@ -12,7 +12,6 @@
   "author": "Conor Turner",
   "license": "ISC",
   "dependencies": {
-    "@blog-agency/environment": "^2.0.2",
     "@blog-agency/urest": "^2.1.0"
   },
   "devDependencies": {
