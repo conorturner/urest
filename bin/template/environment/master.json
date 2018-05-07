@@ -1,0 +1,7 @@
+{
+  "NODE_ENV": "master",
+  "EXAMPLE_SECRET": {
+    "enc": "026b13bb-bb61"
+  },
+  "EXAMPLE_VAR": "blah"
+}

@@ -1,5 +1,5 @@
 {
-  "name": "@blog-agency/urest",
+  "name": "urest",
   "version": "2.3.0",
   "description": "rest framework for google cloud functions",
   "main": "index.js",
@@ -7,7 +7,9 @@
     "test": "mocha test"
   },
   "keywords": [
-    "rest"
+    "rest",
+    "urest",
+    "gcf"
   ],
   "author": "Conor Turner",
   "license": "ISC",
