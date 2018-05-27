@@ -8,24 +8,5 @@ const Router = require("./library/Router");
 module.exports = {
 	UErrors,
 	Rest,
-	Router,
-	getEnv (runningDir){
-		let environment, secrets;
-
-		try {
-			environment = require(runningDir + "/environment.json");
-		}
-		catch (e) {
-			environment = {};
-		}
-
-		try {
-			secrets = require(runningDir + "/secrets.json");
-		}
-		catch (e) {
-			secrets = {};
-		}
-
-		return Object.assign({}, process.env, secrets, environment);
-	}
+	Router
 };

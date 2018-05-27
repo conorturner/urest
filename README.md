@@ -1,3 +1,3 @@
 # urest
 
-Rest framework wrapper for googles implementation of cloud functions.
+The rest frame work from the future.

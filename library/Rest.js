@@ -4,23 +4,25 @@ const Router = require("./Router");
 const Log = require("./Log");
 
 class Rest extends Router {
-	constructor({name = process.env.FUNCTION_NAME} = {}) {
+	constructor({ name = process.env.FUNCTION_NAME } = {}) {
 		super();
 		this.name = name;
 	}
 
 	query(req, res) {
 		const log = new Log(req.headers);
-		log.info({event: "Request", method: req.method, path: req.path || req.url});
+		log.info({ event: "Request", method: req.method, path: req.path || req.url });
 		req.log = log;
+		res.log = log;
+		res = Rest.addHelperMethods(res);
 
 		const reqUrl = req.url;
-		const {method: reqMethod, path: reqPath = reqUrl} = req;
+		const { method: reqMethod, path: reqPath = reqUrl } = req;
 
 		const matched = this.routes
-			.filter(({method}) => method === reqMethod.toLowerCase())
-			.map(({handlers, regex, tokens}) => ({handlers, tokens, match: regex.exec(reqPath)}))
-			.filter(({match}) => match !== null)[0];
+			.filter(({ method }) => method === reqMethod.toLowerCase())
+			.map(({ handlers, regex, tokens }) => ({ handlers, tokens, match: regex.exec(reqPath) }))
+			.filter(({ match }) => match !== null)[0];
 
 		if (!matched) return res.status(404).end(); //TODO: make this customizable
 
@@ -33,7 +35,7 @@ class Rest extends Router {
 	getParams(match, tokens) {
 		return tokens
 			.filter(token => typeof token === "object")
-			.map(({param}) => param)
+			.map(({ param }) => param)
 			.reduce((acc, param, index) => {
 				acc[param] = match[index + 1];
 				return acc;
@@ -67,8 +69,44 @@ class Rest extends Router {
 		res.status(err.statusCode).send(body);
 	}
 
-	export () {
-		return {urest: (req, res) => this.query(req,res)};
+	static addHelperMethods(res) {
+		if (!res.send) {
+			res.send = (ret) => {
+				if (typeof ret === "number") {
+					res.writeHead(ret);
+					res.end(); // TODO: have it send some json here
+				}
+				else {
+					res.writeHead(200, { 'Content-Type': 'application/json' });
+					res.end(JSON.stringify(ret));
+				}
+			};
+		}
+
+		if (!res.status) {
+			res.status = (code) => ({
+				send: (data) => {
+					if(data) {
+						res.writeHead(code, { 'Content-Type': 'application/json' });
+						res.end(JSON.stringify(data));
+					}
+					else {
+						res.writeHead(code);
+						res.end();
+					}
+				}
+			});
+		}
+
+		return res;
+	}
+
+	export() {
+		return { urest: (req, res) => this.query(req, res) };
+	}
+
+	native () {
+		return (req, res) => this.query(req, res);
 	}
 }
 

@@ -2,14 +2,17 @@
 
 const {
 	NODE_ENV = "develop",
-	FUNCTION_NAME
+	FUNCTION_NAME,
+	SERVICE_NAME = FUNCTION_NAME
 } = process.env;
+
+const uuidv4 = require("uuid/v4");
 
 class Log {
 	constructor(headers) {
 		this.city = headers["x-appengine-city"];
 		this.country = headers["x-appengine-country"];
-		this.request_id = headers["function-execution-id"];
+		this.request_id = uuidv4();
 		this.user_ip = headers["x-appengine-user-ip"];
 	}
 
@@ -53,7 +56,7 @@ class Log {
 	getBase() {
 		return {
 			request_id: this.request_id,
-			service: FUNCTION_NAME,
+			service: SERVICE_NAME,
 			environment: NODE_ENV,
 			city: this.city,
 			country: this.country,
