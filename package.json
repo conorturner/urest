@@ -1,6 +1,6 @@
 {
   "name": "urest",
-  "version": "2.3.2",
+  "version": "3.0.0",
   "description": "The rest frame work from the future..",
   "main": "index.js",
   "scripts": {
