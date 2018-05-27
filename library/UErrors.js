@@ -1,6 +1,6 @@
 "use strict";
 
-const restifyErrors = require("restify-errors");
+const restifyErrors = require("restify-errors"); // TODO: this is a massive dependency, should inboard.
 
 module.exports = ({uuidv4}) => {
 	return Object.keys(restifyErrors).reduce((acc, key) => {
