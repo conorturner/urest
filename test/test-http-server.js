@@ -10,15 +10,7 @@ describe("HTTP Server", () => {
 	app.get("/broke", (req, res) => res.status(500).send({error: "oh no"}));
 	app.get("/", (req, res) => res.send({}));
 
-	const http = require('http');
-
-	const server = http.createServer(app.native());
-
-	server.on('clientError', (err, socket) => {
-		socket.end('HTTP/1.1 400 Bad Request\r\n\r\n');
-	});
-	server.listen(8000);
-
+	app.native().listen(8000);
 
 	it("res.send", (done) => {
 

@@ -106,7 +106,15 @@ class Rest extends Router {
 	}
 
 	native () {
-		return (req, res) => this.query(req, res);
+		const http = require('http');
+
+		const server = http.createServer((req, res) => this.query(req, res));
+
+		server.on('clientError', (err, socket) => {
+			socket.end('HTTP/1.1 400 Bad Request\r\n\r\n');
+		});
+
+		return server;
 	}
 }
 
