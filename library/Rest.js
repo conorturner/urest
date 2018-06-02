@@ -14,7 +14,8 @@ class Rest extends Router {
 		log.info({ event: "Request", method: req.method, path: req.path || req.url });
 		req.log = log;
 		res.log = log;
-		res = Rest.addHelperMethods(res);
+		res = Rest.addResHelperMethods(res);
+		req = Rest.addReqHelperMethods(req);
 
 		const reqUrl = req.url;
 		const { method: reqMethod, path: reqPath = reqUrl } = req;
@@ -69,7 +70,12 @@ class Rest extends Router {
 		res.status(err.statusCode).send(body);
 	}
 
-	static addHelperMethods(res) {
+	static addReqHelperMethods (req) {
+		req.on('error', (err) => req.log.error(err));
+		return req;
+	}
+
+	static addResHelperMethods(res) {
 		if (!res.send) {
 			res.send = (ret) => {
 				if (typeof ret === "number") {
@@ -113,6 +119,7 @@ class Rest extends Router {
 		server.on('clientError', (err, socket) => {
 			socket.end('HTTP/1.1 400 Bad Request\r\n\r\n');
 		});
+
 
 		return server;
 	}
