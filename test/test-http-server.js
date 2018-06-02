@@ -48,6 +48,22 @@ describe("HTTP Server", () => {
 
 	});
 
+	it("no route match found", (done) => {
+
+		const options = {
+			uri: "http://localhost:8000/asdfgh",
+			json: true
+		};
+
+		request(options)
+			.then(done)
+			.catch(err => {
+				expect(err.statusCode).to.equal(404);
+				done();
+			});
+
+	});
+
 	it("uerror", (done) => {
 
 		const options = {

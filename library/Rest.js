@@ -24,7 +24,7 @@ class Rest extends Router {
 			.map(({ handlers, regex, tokens }) => ({ handlers, tokens, match: regex.exec(reqPath) }))
 			.filter(({ match }) => match !== null)[0];
 
-		if (!matched) return res.status(404).end(); //TODO: make this customizable
+		if (!matched) return res.status(404).send(); //TODO: make this customizable
 
 		const handlers = this.middleware.concat(matched.handlers);
 		req.params = this.getParams(matched.match, matched.tokens);
