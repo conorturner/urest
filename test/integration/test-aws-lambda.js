@@ -11,6 +11,9 @@ describe("AWS Lambda", () => {
 	app.get("/ubroke", (req, res, next) => next(new UInternalServerError(":(")));
 	app.get("/", (req, res) => res.send({}));
 	app.post("/upost", (req, res) => res.send(req.body));
+	app.route("/route")
+		.get((req,res) => res.send({}))
+		.post((req,res) => res.send({}));
 
 	const getE = ({ httpMethod, path, body }) => ({
 		"body": body,
@@ -78,6 +81,22 @@ describe("AWS Lambda", () => {
 			.then(result => {
 				// console.log(JSON.stringify(result));
 				expect(result).to.deep.equal({ "statusCode": 200, "body": "{}" });
+				done();
+			})
+			.catch(done);
+
+	});
+
+	it("router.route", (done) => {
+
+		const e = getE({ httpMethod: "GET", path: "/route" });
+		const e2 = getE({ httpMethod: "POST", path: "/route" });
+
+		Promise.all([
+			app.lambda(e).then(result => expect(result).to.deep.equal({ "statusCode": 200, "body": "{}" })),
+			app.lambda(e2).then(result => expect(result).to.deep.equal({ "statusCode": 200, "body": "{}" })),
+		])
+			.then(() => {
 				done();
 			})
 			.catch(done);
