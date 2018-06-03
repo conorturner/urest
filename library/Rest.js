@@ -2,9 +2,13 @@
 
 const Router = require("./Router");
 const Log = require("./Log");
+const UReq = require("./UReq");
+const URes = require("./URes");
+
+const defaultName = process.env.FUNCTION_NAME || process.env.AWS_LAMBDA_FUNCTION_NAME;
 
 class Rest extends Router {
-	constructor({ name = process.env.FUNCTION_NAME } = {}) {
+	constructor({ name = defaultName } = {}) {
 		super();
 		this.name = name;
 	}
@@ -14,8 +18,6 @@ class Rest extends Router {
 		log.info({ event: "Request", method: req.method, path: req.path || req.url });
 		req.log = log;
 		res.log = log;
-		res = Rest.addResHelperMethods(res);
-		req = Rest.addReqHelperMethods(req);
 
 		const reqUrl = req.url;
 		const { method: reqMethod, path: reqPath = reqUrl } = req;
@@ -70,57 +72,23 @@ class Rest extends Router {
 		res.status(err.statusCode).send(body);
 	}
 
-	static addReqHelperMethods (req) {
-		if(req.on) req.on('error', (err) => req.log.error(err));
-		return req;
-	}
-
-	static addResHelperMethods(res) {
-		if (!res.send) {
-			res.send = (ret) => {
-				if (typeof ret === "number") {
-					res.writeHead(ret);
-					res.end(); // TODO: have it send some json here
-				}
-				else {
-					res.writeHead(200, { 'Content-Type': 'application/json' });
-					res.end(JSON.stringify(ret));
-				}
-			};
-		}
-
-		if (!res.status) {
-			res.status = (code) => ({
-				send: (data) => {
-					if(data) {
-						res.writeHead(code, { 'Content-Type': 'application/json' });
-						res.end(JSON.stringify(data));
-					}
-					else {
-						res.writeHead(code);
-						res.end();
-					}
-				}
-			});
-		}
-
-		return res;
-	}
-
-	export() {
+	gcf() {
 		return { urest: (req, res) => this.query(req, res) };
+	}
+
+	lambda (e) {
+		return new Promise(callback => {
+			const req = UReq.lambda(e);
+			const res = URes.lambda(e, callback);
+
+			this.query(req, res);
+		});
 	}
 
 	native () {
 		const http = require('http');
-
-		const server = http.createServer((req, res) => this.query(req, res));
-
-		server.on('clientError', (err, socket) => {
-			socket.end('HTTP/1.1 400 Bad Request\r\n\r\n');
-		});
-
-
+		const server = http.createServer((req, res) => this.query(UReq.native(req), URes.native(res)));
+		server.on('clientError', (err, socket) => socket.end('HTTP/1.1 400 Bad Request\r\n\r\n'));
 		return server;
 	}
 }

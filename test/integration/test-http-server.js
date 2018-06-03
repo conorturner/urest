@@ -1,6 +1,6 @@
 const { expect } = require("chai");
 
-const { Rest, Router, UErrors, JsonBodyParser } = require("../index");
+const { Rest, Router, UErrors, JsonBodyParser } = require("../../index");
 const { UInternalServerError } = UErrors;
 const request = require("request-promise-native");
 
