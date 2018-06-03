@@ -71,7 +71,7 @@ class Rest extends Router {
 	}
 
 	static addReqHelperMethods (req) {
-		req.on('error', (err) => req.log.error(err));
+		if(req.on) req.on('error', (err) => req.log.error(err));
 		return req;
 	}
 

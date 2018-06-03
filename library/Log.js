@@ -6,13 +6,13 @@ const {
 	SERVICE_NAME = FUNCTION_NAME
 } = process.env;
 
-const uuidv4 = require("uuid/v4");
+const crypto = require("crypto");
 
 class Log {
 	constructor(headers) {
 		this.city = headers["x-appengine-city"];
 		this.country = headers["x-appengine-country"];
-		this.request_id = uuidv4();
+		this.request_id = crypto.randomBytes(20).toString("hex");
 		this.user_ip = headers["x-appengine-user-ip"];
 	}
 

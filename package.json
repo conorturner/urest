@@ -1,6 +1,6 @@
 {
   "name": "urest",
-  "version": "3.0.5",
+  "version": "3.0.6",
   "description": "The rest frame work from the future..",
   "main": "index.js",
   "scripts": {
@@ -13,8 +13,7 @@
   ],
   "author": "Conor Turner",
   "license": "ISC",
-  "dependencies": {
-  },
+  "dependencies": {},
   "devDependencies": {
     "chai": "^4.1.2",
     "mocha": "^4.0.1",
