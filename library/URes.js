@@ -1,28 +1,18 @@
-class URes {
-	static native(res) {
-		res.statusCode = 200;
-		res.send = (ret) => {
-			if (typeof ret === "number") {
-				res.writeHead(ret);
-				res.end(); // TODO: have it send some json here
-			}
-			else {
-				res.writeHead(res.statusCode, { 'Content-Type': 'application/json' });
-				res.end(JSON.stringify(ret));
-			}
-		};
+const EventEmitter = require('events');
 
-		res.status = (code) => {
-			res.statusCode = code;
-			return res;
-		};
+class URes extends EventEmitter { //TODO: make this an event emitter
 
-		return res;
+	constructor({ res, e, callback }) {
+		super();
+		this.zero = process.hrtime();
+		this.statusCode = 200;
+
+		if (res) this.initNative({ res });
+		if (e) this.initLambda({ e, callback });
 	}
 
-	static lambda(e, callback) {
-		const res = {
-			statusCode: 200,
+	initLambda({ e, callback }) {
+		this.platform = {
 			send: (ret) => {
 
 				switch (typeof ret) {
@@ -31,28 +21,52 @@ class URes {
 						break;
 					}
 					case "string": {
-						callback({ statusCode: res.statusCode, body: JSON.stringify({ message: ret }) });
+						callback({ statusCode: this.statusCode, body: JSON.stringify({ message: ret }) });
 						break;
 					}
 					case "object": {
-						callback({ statusCode: res.statusCode, body: JSON.stringify(ret) });
+						callback({ statusCode: this.statusCode, body: JSON.stringify(ret) });
 						break;
 					}
 					default: {
-						callback({ statusCode: res.statusCode });
+						callback({ statusCode: this.statusCode });
 						break;
 					}
 				}
 
-			},
-			status: (code) => {
-				res.statusCode = code;
-				return res;
-			},
-			sendStatus: (statusCode) => callback({ statusCode })
+			}
 		};
+	}
 
-		return res;
+	initNative({ res }) {
+		this.platform = {
+			send: (ret) => {
+
+				if (typeof ret === "number") {
+					res.writeHead(ret);
+					res.end(); // TODO: have it send some json here
+				}
+				else {
+					res.writeHead(this.statusCode, { 'Content-Type': 'application/json' });
+					res.end(JSON.stringify(ret));
+				}
+
+			}
+		};
+	}
+
+	send() {
+		this.platform.send(...arguments);
+	}
+
+	status(statusCode) {
+		this.statusCode = statusCode;
+		return this;
+	}
+
+	sendStatus(statusCode) {
+		this.statusCode = statusCode;
+		this.send();
 	}
 }
 

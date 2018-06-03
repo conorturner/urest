@@ -4,6 +4,7 @@ const Router = require("./Router");
 const Log = require("./Log");
 const UReq = require("./UReq");
 const URes = require("./URes");
+const EventEmitter = require('events');
 
 const defaultName = process.env.FUNCTION_NAME || process.env.AWS_LAMBDA_FUNCTION_NAME;
 
@@ -12,13 +13,20 @@ class Rest extends Router {
 		super();
 		this.name = name;
 		this.log = log;
+		this.eventEmitter = new EventEmitter();
+	}
+
+	on(event, functor) {
+		this.eventEmitter(event, functor);
 	}
 
 	query(req, res) {
-		if(this.log) req.log = this.log;
+		this.eventEmitter.emit("req", req); // emit req first of all
+
+		if (this.log) req.log = this.log;
 		else {
 			const log = new Log(req.headers);
-			log.info({ event: "Request", method: req.method, path: req.path || req.url });
+			log.info({ event: "Request", method: req.method, path: req.path || req.url, body: req.body });
 			req.log = log;
 		}
 
@@ -50,6 +58,7 @@ class Rest extends Router {
 	}
 
 	runHandlers(req, res, handlers) { // This is special, lol
+
 		const runHandler = (next, i) => {
 			const handler = handlers[i];
 			if (handler) handler(req, res, next);
@@ -80,18 +89,18 @@ class Rest extends Router {
 		return { urest: (req, res) => this.query(req, res) };
 	}
 
-	lambda (e) {
+	lambda(e) {
 		return new Promise(callback => {
-			const req = UReq.lambda(e);
-			const res = URes.lambda(e, callback);
+			const req = new UReq({e});
+			const res = new URes({e, callback});
 
 			this.query(req, res);
 		});
 	}
 
-	native () {
+	native() {
 		const http = require('http');
-		const server = http.createServer((req, res) => this.query(UReq.native(req), URes.native(res)));
+		const server = http.createServer((req, res) => this.query(new UReq({req}), new URes({res})));
 		server.on('clientError', (err, socket) => socket.end('HTTP/1.1 400 Bad Request\r\n\r\n'));
 		return server;
 	}

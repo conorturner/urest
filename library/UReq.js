@@ -4,7 +4,7 @@ class UReq {
 		return req;
 	}
 
-	static lambda(e) {
+	static lambda(e, self) {
 		const { headers, path, httpMethod, body, queryStringParameters } = e;
 
 		let parsedBody;
@@ -15,14 +15,21 @@ class UReq {
 			console.log(e);
 		}
 
-		return {
+		Object.assign(self, {
 			headers,
 			path,
 			method: httpMethod,
 			body: parsedBody,
 			query: queryStringParameters === null ? {} : queryStringParameters
-		};
+		});
 	}
+
+	constructor({ e, req }) {
+		if (e) UReq.lambda(e, this);
+		if(req) return UReq.native(req);
+	}
+
+
 }
 
 module.exports = UReq;

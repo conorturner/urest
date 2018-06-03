@@ -4,7 +4,7 @@
   "description": "The rest frame work from the future..",
   "main": "index.js",
   "scripts": {
-    "test": "mocha test"
+    "test": "mocha test --recursive"
   },
   "keywords": [
     "rest",
@@ -16,7 +16,7 @@
   "dependencies": {},
   "devDependencies": {
     "chai": "^4.1.2",
-    "mocha": "^4.0.1",
+    "mocha": "^3.2.0",
     "request": "^2.87.0",
     "request-promise-native": "^1.0.5"
   }
