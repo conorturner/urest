@@ -1,6 +1,6 @@
 {
   "name": "urest",
-  "version": "3.0.3",
+  "version": "3.0.4",
   "description": "The rest frame work from the future..",
   "main": "index.js",
   "scripts": {
@@ -14,7 +14,6 @@
   "author": "Conor Turner",
   "license": "ISC",
   "dependencies": {
-    "restify-errors": "^5.0.0",
     "uuid": "^3.1.0"
   },
   "devDependencies": {
