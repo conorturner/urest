@@ -1,3 +1,3 @@
 # urest
 
-The rest frame work from the future.
+The zero dependancy rest frame work from the future.

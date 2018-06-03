@@ -58,22 +58,21 @@ const errorMap = {
 	"UResourceNotFoundError": { "statusCode": 404, "code": "Error" },
 	"UWrongAcceptError": { "statusCode": 406, "code": "Error" }
 };
+const crypto = require("crypto");
 
-module.exports = ({ uuidv4 }) => {
-	return Object.keys(errorMap).reduce((acc, key) => {
+module.exports = Object.keys(errorMap).reduce((acc, key) => {
 
-		const {code, statusCode} = errorMap[key];
+	const {code, statusCode} = errorMap[key];
 
-		acc[key] = class extends Error {
-			constructor(message) {
-				super(message);
-				this.uuid = uuidv4();
-				this.code = code;
-				this.statusCode = statusCode;
-			}
-		};
+	acc[key] = class extends Error {
+		constructor(message) {
+			super(message);
+			this.uuid = crypto.randomBytes(20).toString("hex");
+			this.code = code;
+			this.statusCode = statusCode;
+		}
+	};
 
-		return acc;
-	}, {});
+	return acc;
 
-};
+}, {});

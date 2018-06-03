@@ -1,4 +1,4 @@
-const UErrors = require("../library/UErrors")({ uuidv4: require("uuid/v4") });
+const UErrors = require("../library/UErrors");
 
 describe("UErrors - TDD", () => {
 

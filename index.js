@@ -1,7 +1,6 @@
 "use strict";
 
-const uuidv4 = require("uuid/v4");
-const UErrors = require("./library/UErrors")({uuidv4});
+const UErrors = require("./library/UErrors");
 const Rest = require("./library/Rest");
 const Router = require("./library/Router");
 const JsonBodyParser = require("./library/JsonBodyParser");
