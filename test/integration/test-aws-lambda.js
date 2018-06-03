@@ -108,10 +108,7 @@ describe("AWS Lambda", () => {
 		app.lambda(e)
 			.then(result => {
 				// console.log(JSON.stringify(result));
-				expect(result).to.deep.equal({
-					"body": undefined,
-					"statusCode": 404
-				});
+				expect(result).to.deep.equal({ "statusCode": 404 });
 				done();
 			})
 			.catch(done);

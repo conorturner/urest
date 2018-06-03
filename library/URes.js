@@ -1,5 +1,5 @@
 class URes {
-	static native (res) {
+	static native(res) {
 		res.statusCode = 200;
 		res.send = (ret) => {
 			if (typeof ret === "number") {
@@ -20,17 +20,36 @@ class URes {
 		return res;
 	}
 
-	static lambda (e, callback) {
+	static lambda(e, callback) {
 		const res = {
 			statusCode: 200,
 			send: (ret) => {
-				if (typeof ret === "number") callback({statusCode: ret});
-				else callback({statusCode: res.statusCode, body: JSON.stringify(ret)});
+
+				switch (typeof ret) {
+					case "number": {
+						callback({ statusCode: ret });
+						break;
+					}
+					case "string": {
+						callback({ statusCode: res.statusCode, body: JSON.stringify({ message: ret }) });
+						break;
+					}
+					case "object": {
+						callback({ statusCode: res.statusCode, body: JSON.stringify(ret) });
+						break;
+					}
+					default: {
+						callback({ statusCode: res.statusCode });
+						break;
+					}
+				}
+
 			},
 			status: (code) => {
 				res.statusCode = code;
 				return res;
-			}
+			},
+			sendStatus: (statusCode) => callback({ statusCode })
 		};
 
 		return res;
