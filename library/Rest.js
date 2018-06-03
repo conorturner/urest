@@ -8,16 +8,20 @@ const URes = require("./URes");
 const defaultName = process.env.FUNCTION_NAME || process.env.AWS_LAMBDA_FUNCTION_NAME;
 
 class Rest extends Router {
-	constructor({ name = defaultName } = {}) {
+	constructor({ name = defaultName, log } = {}) {
 		super();
 		this.name = name;
+		this.log = log;
 	}
 
 	query(req, res) {
-		const log = new Log(req.headers);
-		log.info({ event: "Request", method: req.method, path: req.path || req.url });
-		req.log = log;
-		res.log = log;
+		if(this.log) req.log = this.log;
+		else {
+			const log = new Log(req.headers);
+			log.info({ event: "Request", method: req.method, path: req.path || req.url });
+			req.log = log;
+		}
+
 
 		const reqUrl = req.url;
 		const { method: reqMethod, path: reqPath = reqUrl } = req;
