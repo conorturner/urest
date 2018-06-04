@@ -71,7 +71,7 @@ class Router {
 			.map(token => token.startsWith(":") ? { param: token.substr(1) } : token);
 
 
-		const regexString = "\\/" + tokens.map(token => typeof token === "object" ? "([^\\/]+)" : token).join("\\/");
+		const regexString = "^\\/" + tokens.map(token => typeof token === "object" ? "([^\\/]+)" : token).join("\\/");
 		const regex = new RegExp(regexString + "$");
 
 		return { regex, tokens };

@@ -174,4 +174,21 @@ describe("AWS Lambda", () => {
 
 	});
 
+	it("Routing Order", (done) => {
+		const app = new Rest();
+
+		app.get("/broke", (req, res) => res.status(500).send({ error: "oh no" }));
+		app.get("/v2/broke", (req, res) => res.status(500).send({ error: "yay" }));
+
+		const e = getE({ httpMethod: "GET", path: "/v2/broke" });
+
+		app.lambda(e)
+			.then(result => {
+				expect(result).to.deep.equal({ statusCode: 500, body: '{"error":"yay"}' });
+				// console.log(result)
+				done();
+			})
+			.catch(done);
+	})
+
 });
