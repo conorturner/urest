@@ -1,6 +1,14 @@
+const url = require("url");
+const querystring = require("querystring");
+
 class UReq {
 	static native(req) {
-		if (req.on) req.on('error', (err) => req.log.error(err));
+		if (req.on) req.on("error", (err) => req.log.error(err));
+		const parsed = url.parse(req.url);
+
+		req.path = parsed.pathname;
+		req.query = querystring.parse(parsed.query);
+
 		return req;
 	}
 
@@ -12,7 +20,6 @@ class UReq {
 			parsedBody = body ? JSON.parse(body) : undefined;
 		}
 		catch (e) {
-			console.log(e);
 		}
 
 		Object.assign(self, {
@@ -26,7 +33,7 @@ class UReq {
 
 	constructor({ e, req }) {
 		if (e) UReq.lambda(e, this);
-		if(req) return UReq.native(req);
+		if (req) return UReq.native(req);
 	}
 
 

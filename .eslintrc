@@ -1,0 +1,17 @@
+{
+  "extends": "eslint-config-synacor",
+  "rules": {
+    "quotes": [
+      "error",
+      "double"
+    ],
+    "no-unused-vars": "warn",
+    "react/sort-comp": "off",
+    "lines-around-comment": "off",
+    "react/prefer-stateless-function": "off",
+    "react/jsx-tag-spacing": "off",
+    "react/jsx-no-bind": "off",
+    "react/jsx-closing-bracket-location": "off",
+    "curly": ["error", "multi"]
+  }
+}

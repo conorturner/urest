@@ -1,14 +1,15 @@
-const EventEmitter = require('events');
+const EventEmitter = require("events");
 
 class URes extends EventEmitter { //TODO: make this an event emitter
 
-	constructor({ res, e, callback }) {
+	constructor({ req, res, callback }) {
 		super();
 		this.zero = process.hrtime();
 		this.statusCode = 200;
+		this.res = res;
 
-		if (res) this.initNative({ res });
-		if (e) this.initLambda({ e, callback });
+		if (res) this.initNative({ req, res });
+		if (callback) this.initLambda({ req, callback });
 	}
 
 	initLambda({ e, callback }) {
@@ -38,7 +39,7 @@ class URes extends EventEmitter { //TODO: make this an event emitter
 		};
 	}
 
-	initNative({ res }) {
+	initNative({ req, res }) {
 		this.platform = {
 			send: (ret) => {
 
@@ -47,7 +48,7 @@ class URes extends EventEmitter { //TODO: make this an event emitter
 					res.end(); // TODO: have it send some json here
 				}
 				else {
-					res.writeHead(this.statusCode, { 'Content-Type': 'application/json' });
+					res.writeHead(this.statusCode, { "Content-Type": "application/json" });
 					res.end(JSON.stringify(ret));
 				}
 
@@ -55,8 +56,9 @@ class URes extends EventEmitter { //TODO: make this an event emitter
 		};
 	}
 
-	send() {
-		this.platform.send(...arguments);
+	send(...args) {
+		this.emit("res", this.res);
+		this.platform.send(...args);
 	}
 
 	status(statusCode) {

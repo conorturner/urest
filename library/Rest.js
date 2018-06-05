@@ -1,10 +1,10 @@
-"use strict";
+
 
 const Router = require("./Router");
 const Log = require("./Log");
 const UReq = require("./UReq");
 const URes = require("./URes");
-const EventEmitter = require('events');
+const EventEmitter = require("events");
 
 const defaultName = process.env.FUNCTION_NAME || process.env.AWS_LAMBDA_FUNCTION_NAME;
 
@@ -91,17 +91,17 @@ class Rest extends Router {
 
 	lambda(e) {
 		return new Promise(callback => {
-			const req = new UReq({e});
-			const res = new URes({e, callback});
+			const req = new UReq({ e });
+			const res = new URes({ e, callback });
 
 			this.query(req, res);
 		});
 	}
 
 	native() {
-		const http = require('http');
-		const server = http.createServer((req, res) => this.query(new UReq({req}), new URes({res})));
-		server.on('clientError', (err, socket) => socket.end('HTTP/1.1 400 Bad Request\r\n\r\n'));
+		const http = require("http");
+		const server = http.createServer((req, res) => this.query(new UReq({ req }), new URes({ res })));
+		server.on("clientError", (err, socket) => socket.end("HTTP/1.1 400 Bad Request\r\n\r\n"));
 		return server;
 	}
 }

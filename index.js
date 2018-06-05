@@ -1,5 +1,3 @@
-"use strict";
-
 const UErrors = require("./library/UErrors");
 const Rest = require("./library/Rest");
 const Router = require("./library/Router");

@@ -6,8 +6,8 @@ class JsonBodyParser {
 			let body = [];
 
 			req
-				.on('data', (chunk) => body.push(chunk))
-				.on('end', () => {
+				.on("data", (chunk) => body.push(chunk))
+				.on("end", () => {
 					try {
 						req.body = JSON.parse(Buffer.concat(body).toString());
 					}

@@ -1,5 +1,3 @@
-"use strict";
-
 class Router {
 
 	constructor() {
@@ -12,7 +10,7 @@ class Router {
 
 		router.routes.forEach(route => {
 			route.handlers = router.middleware.concat(route.handlers);
-			this.routes.push(Object.assign({}, route, { path: path + route.path }, Router.parseRoute(path + route.path)))
+			this.routes.push(Object.assign({}, route, { path: path + route.path }, Router.parseRoute(path + route.path)));
 		});
 	}
 
@@ -20,28 +18,28 @@ class Router {
 		this.middleware.push(middleware);
 	}
 
-	get() {
-		this._addRoute("get", arguments);
+	get(...args) {
+		this._addRoute("get", args);
 	}
 
-	put() {
-		this._addRoute("put", arguments);
+	put(...args) {
+		this._addRoute("put", args);
 	}
 
-	post() {
-		this._addRoute("post", arguments);
+	post(...args) {
+		this._addRoute("post", args);
 	}
 
-	delete() {
-		this._addRoute("delete", arguments);
+	delete(...args) {
+		this._addRoute("delete", args);
 	}
 
 	route(path) {
 		const self = this;
 		const miniRouter = {};
 
-		const proxyMethod = (method) => function () {
-			self._addRoute(method, [path, ...arguments]);
+		const proxyMethod = (method) => function (...args) {
+			self._addRoute(method, [path, ...args]);
 			return miniRouter;
 		};
 

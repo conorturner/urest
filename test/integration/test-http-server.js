@@ -12,6 +12,7 @@ describe("HTTP Server", () => {
 	app.get("/broke", (req, res) => res.status(500).send({ error: "oh no" }));
 	app.get("/ubroke", (req, res, next) => next(new UInternalServerError(":(")));
 	app.get("/", (req, res) => res.send({}));
+	app.get("/query", (req, res) => res.send(req.query));
 	app.post("/upost", (req, res) => res.send(req.body));
 
 	// console.log(app.routes)
@@ -28,6 +29,26 @@ describe("HTTP Server", () => {
 		request(options)
 			.then(result => {
 				console.log(result);
+				done();
+			})
+			.catch(done);
+
+	});
+
+	it("req.query", (done) => {
+
+		const options = {
+			uri: "http://localhost:8000/query",
+			qs: {
+				test: "1",
+				testing: "2"
+			},
+			json: true
+		};
+
+		request(options)
+			.then(result => {
+				expect(result).to.deep.equal(options.qs);
 				done();
 			})
 			.catch(done);
