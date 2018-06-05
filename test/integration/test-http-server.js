@@ -162,7 +162,7 @@ describe("HTTP Server", () => {
 
 		request(options)
 			.then(result => {
-				expect(result).to.deep.equal({value: "b"})
+				expect(result).to.deep.equal({ value: "b" });
 				done();
 			})
 			.catch(done);
