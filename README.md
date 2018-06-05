@@ -32,3 +32,4 @@ const { UInternalServerError } = UErrors;
 app.get("/broken", (req, res, next) => next(new UInternalServerError("This is logged")));
 
 ```
+# eslint-config-u
