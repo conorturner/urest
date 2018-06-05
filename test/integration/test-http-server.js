@@ -15,7 +15,14 @@ describe("HTTP Server", () => {
 	app.get("/query", (req, res) => res.send(req.query));
 	app.post("/upost", (req, res) => res.send(req.body));
 
-	// console.log(app.routes)
+	const aRouter = new Router();
+	const bRouter = new Router();
+
+	aRouter.route("/same").get((req, res) => res.send({ value: "a" }));
+	bRouter.route("/same").get((req, res) => res.send({ value: "b" }));
+
+	app.use("/", aRouter);
+	app.use("/b", bRouter);
 
 	app.native().listen(8000);
 
@@ -105,28 +112,28 @@ describe("HTTP Server", () => {
 
 	});
 
-	it("JSON body", (done) => {
+	it("json req.body", (done) => {
 
 		const body = {
 			value: 80.86,
-			timestamp: '2017-01-19T20:55:57.416Z',
-			currency: 'EUR',
-			ip: '37.69.22.229',
-			date: '2018-06-02T19:26:18.854Z',
-			name: 'Mitchell Townsend',
-			country: 'Luxembourg',
+			timestamp: "2017-01-19T20:55:57.416Z",
+			currency: "EUR",
+			ip: "37.69.22.229",
+			date: "2018-06-02T19:26:18.854Z",
+			name: "Mitchell Townsend",
+			country: "Luxembourg",
 			age: 36,
-			gender: 'Male',
-			eventTypeName: 'page-view',
+			gender: "Male",
+			eventTypeName: "page-view",
 			project_id: 1234455678
 		};
 
 		const options = {
-			method: 'POST',
+			method: "POST",
 			uri: "http://localhost:8000/upost",
 			headers: {
-				'cache-control': 'no-cache',
-				'content-type': 'application/json'
+				"cache-control": "no-cache",
+				"content-type": "application/json"
 			},
 			body,
 			json: true
@@ -135,6 +142,27 @@ describe("HTTP Server", () => {
 		request(options)
 			.then(result => {
 				expect(result).to.deep.equal(body);
+				done();
+			})
+			.catch(done);
+
+	});
+
+	it("Router.route", (done) => {
+
+		const options = {
+			method: "GET",
+			uri: "http://localhost:8000/b/same",
+			headers: {
+				"cache-control": "no-cache",
+				"content-type": "application/json"
+			},
+			json: true
+		};
+
+		request(options)
+			.then(result => {
+				expect(result).to.deep.equal({value: "b"})
 				done();
 			})
 			.catch(done);
