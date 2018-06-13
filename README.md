@@ -3,7 +3,7 @@
 The zero dependancy rest frame work from the future.
 
 [![npm](https://img.shields.io/npm/dt/urest.svg?style=for-the-badge)](https://www.npmjs.com/package/urest)
-![Travis](https://img.shields.io/travis/conorturner/urest.svg?style=for-the-badge)
+[![Travis](https://img.shields.io/travis/conorturner/urest.svg?style=for-the-badge)](https://travis-ci.org/conorturner/urest)
 
 ### Install
 
