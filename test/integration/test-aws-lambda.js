@@ -16,36 +16,36 @@ describe("AWS Lambda", () => {
 		.post((req,res) => res.send({}));
 
 	const getE = ({ httpMethod, path, body }) => ({
-		"body": body,
-		"httpMethod": httpMethod,
-		"resource": "/{proxy+}",
-		"queryStringParameters": {
-			"foo": "bar"
+		body,
+		httpMethod,
+		resource: "/{proxy+}",
+		queryStringParameters: {
+			foo: "bar"
 		},
-		"requestContext": {
-			"httpMethod": "POST",
-			"requestId": "c6af9ac6-7b61-11e6-9a41-93e8deadbeef",
-			"path": "/{proxy+}",
-			"extendedRequestId": null,
-			"resourceId": "123456",
-			"apiId": "1234567890",
-			"stage": "prod",
-			"resourcePath": "/{proxy+}",
-			"identity": {
-				"accountId": null,
-				"apiKey": null,
-				"userArn": null,
-				"cognitoAuthenticationProvider": null,
-				"cognitoIdentityPoolId": null,
-				"userAgent": "Custom User Agent String",
-				"caller": null,
-				"cognitoAuthenticationType": null,
-				"sourceIp": "127.0.0.1",
-				"user": null
+		requestContext: {
+			httpMethod: "POST",
+			requestId: "c6af9ac6-7b61-11e6-9a41-93e8deadbeef",
+			path: "/{proxy+}",
+			extendedRequestId: null,
+			resourceId: "123456",
+			apiId: "1234567890",
+			stage: "prod",
+			resourcePath: "/{proxy+}",
+			identity: {
+				accountId: null,
+				apiKey: null,
+				userArn: null,
+				cognitoAuthenticationProvider: null,
+				cognitoIdentityPoolId: null,
+				userAgent: "Custom User Agent String",
+				caller: null,
+				cognitoAuthenticationType: null,
+				sourceIp: "127.0.0.1",
+				user: null
 			},
-			"accountId": "123456789012"
+			accountId: "123456789012"
 		},
-		"headers": {
+		headers: {
 			"Accept-Language": "en-US,en;q=0.8",
 			"Accept-Encoding": "gzip, deflate, sdch",
 			"X-Forwarded-Port": "443",
@@ -53,24 +53,24 @@ describe("AWS Lambda", () => {
 			"X-Amz-Cf-Id": "aaaaaaaaaae3VYQb9jd-nvCd-de396Uhbp027Y2JvkCPNLmGJHqlaA==",
 			"CloudFront-Is-Tablet-Viewer": "false",
 			"User-Agent": "Custom User Agent String",
-			"Via": "1.1 08f323deadbeefa7af34d5feb414ce27.cloudfront.net (CloudFront)",
+			Via: "1.1 08f323deadbeefa7af34d5feb414ce27.cloudfront.net (CloudFront)",
 			"CloudFront-Is-Desktop-Viewer": "true",
 			"CloudFront-Is-SmartTV-Viewer": "false",
 			"CloudFront-Is-Mobile-Viewer": "false",
 			"X-Forwarded-For": "127.0.0.1, 127.0.0.2",
-			"Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+			Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
 			"Upgrade-Insecure-Requests": "1",
-			"Host": "1234567890.execute-api.us-east-1.amazonaws.com",
+			Host: "1234567890.execute-api.us-east-1.amazonaws.com",
 			"X-Forwarded-Proto": "https",
 			"Cache-Control": "max-age=0",
 			"CloudFront-Forwarded-Proto": "https"
 		},
-		"stageVariables": null,
-		"path": path,
-		"pathParameters": {
-			"proxy": path
+		stageVariables: null,
+		path,
+		pathParameters: {
+			proxy: path
 		},
-		"isBase64Encoded": false
+		isBase64Encoded: false
 	});
 
 	it("res.send", (done) => {
@@ -80,7 +80,7 @@ describe("AWS Lambda", () => {
 		app.lambda(e)
 			.then(result => {
 				// console.log(JSON.stringify(result));
-				expect(result).to.deep.equal({ "statusCode": 200, "body": "{}" });
+				expect(result).to.deep.equal({ statusCode: 200, body: "{}" });
 				done();
 			})
 			.catch(done);
@@ -93,8 +93,8 @@ describe("AWS Lambda", () => {
 		const e2 = getE({ httpMethod: "POST", path: "/route" });
 
 		Promise.all([
-			app.lambda(e).then(result => expect(result).to.deep.equal({ "statusCode": 200, "body": "{}" })),
-			app.lambda(e2).then(result => expect(result).to.deep.equal({ "statusCode": 200, "body": "{}" })),
+			app.lambda(e).then(result => expect(result).to.deep.equal({ statusCode: 200, body: "{}" })),
+			app.lambda(e2).then(result => expect(result).to.deep.equal({ statusCode: 200, body: "{}" }))
 		])
 			.then(() => {
 				done();
@@ -111,8 +111,8 @@ describe("AWS Lambda", () => {
 			.then(result => {
 				// console.log(JSON.stringify(result));
 				expect(result).to.deep.equal({
-					"body": "{\"error\":\"oh no\"}",
-					"statusCode": 500
+					body: "{\"error\":\"oh no\"}",
+					statusCode: 500
 				});
 				done();
 			})
@@ -127,7 +127,7 @@ describe("AWS Lambda", () => {
 		app.lambda(e)
 			.then(result => {
 				// console.log(JSON.stringify(result));
-				expect(result).to.deep.equal({ "statusCode": 404 });
+				expect(result).to.deep.equal({ statusCode: 404 });
 				done();
 			})
 			.catch(done);
@@ -151,15 +151,15 @@ describe("AWS Lambda", () => {
 
 		const body = {
 			value: 80.86,
-			timestamp: '2017-01-19T20:55:57.416Z',
-			currency: 'EUR',
-			ip: '37.69.22.229',
-			date: '2018-06-02T19:26:18.854Z',
-			name: 'Mitchell Townsend',
-			country: 'Luxembourg',
+			timestamp: "2017-01-19T20:55:57.416Z",
+			currency: "EUR",
+			ip: "37.69.22.229",
+			date: "2018-06-02T19:26:18.854Z",
+			name: "Mitchell Townsend",
+			country: "Luxembourg",
 			age: 36,
-			gender: 'Male',
-			eventTypeName: 'page-view',
+			gender: "Male",
+			eventTypeName: "page-view",
 			project_id: 1234455678
 		};
 
@@ -184,11 +184,11 @@ describe("AWS Lambda", () => {
 
 		app.lambda(e)
 			.then(result => {
-				expect(result).to.deep.equal({ statusCode: 500, body: '{"error":"yay"}' });
+				expect(result).to.deep.equal({ statusCode: 500, body: "{\"error\":\"yay\"}" });
 				// console.log(result)
 				done();
 			})
 			.catch(done);
-	})
+	});
 
 });
