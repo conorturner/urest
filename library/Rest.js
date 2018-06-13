@@ -1,6 +1,5 @@
-
-
 const Router = require("./Router");
+const { UInternalServerError } = require("./UErrors");
 const Log = require("./Log");
 const UReq = require("./UReq");
 const URes = require("./URes");
@@ -61,7 +60,13 @@ class Rest extends Router {
 
 		const runHandler = (next, i) => {
 			const handler = handlers[i];
-			if (handler) handler(req, res, next);
+
+			try {
+				if (handler) handler(req, res, next);
+			}
+			catch (e) {
+				Rest.onError(new UInternalServerError(e), req, res);
+			}
 		};
 
 		let i = 0;

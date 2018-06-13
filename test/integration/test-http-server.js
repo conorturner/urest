@@ -11,6 +11,9 @@ describe("HTTP Server", () => {
 	app.pre(JsonBodyParser.middleware());
 	app.get("/broke", (req, res) => res.status(500).send({ error: "oh no" }));
 	app.get("/ubroke", (req, res, next) => next(new UInternalServerError(":(")));
+	app.get("/very-broke", (req, res, next) => {
+		throw new Error("Very broken");
+	});
 	app.get("/", (req, res) => res.send({}));
 	app.get("/query", (req, res) => res.send(req.query));
 	app.post("/upost", (req, res) => res.send(req.body));
@@ -166,6 +169,28 @@ describe("HTTP Server", () => {
 				done();
 			})
 			.catch(done);
+
+	});
+
+	it("Throw in route", (done) => {
+
+		const options = {
+			method: "GET",
+			uri: "http://localhost:8000/very-broke",
+			headers: {
+				"cache-control": "no-cache",
+				"content-type": "application/json"
+			},
+			json: true
+		};
+
+		request(options)
+			.then(done)
+			.catch(err => {
+				expect(err.statusCode).to.deep.equal(500);
+				expect(err.error.eid).to.be.a("string");
+				done();
+			});
 
 	});
 
