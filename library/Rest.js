@@ -84,7 +84,7 @@ class Rest extends Router {
 
 		const body = {
 			code: err.code,
-			eid: err.uuid
+			eid: err.eid
 		};
 
 		res.status(err.statusCode).send(body);

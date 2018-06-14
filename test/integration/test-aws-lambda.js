@@ -140,7 +140,10 @@ describe("AWS Lambda", () => {
 
 		app.lambda(e)
 			.then(result => {
-				console.log(JSON.stringify(result));
+				// console.log(JSON.stringify(result));
+				const body = JSON.parse(result.body);
+				expect(body.eid).to.be.a("string");
+				expect(body.code).to.equal("InternalServer");
 				done();
 			})
 			.catch(done);
@@ -185,7 +188,6 @@ describe("AWS Lambda", () => {
 		app.lambda(e)
 			.then(result => {
 				expect(result).to.deep.equal({ statusCode: 500, body: "{\"error\":\"yay\"}" });
-				// console.log(result)
 				done();
 			})
 			.catch(done);

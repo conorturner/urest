@@ -40,21 +40,21 @@ const errorMap = {
 	UBandwidthLimitExceededError: { statusCode: 509, code: "BandwidthLimitExceeded" },
 	UNotExtendedError: { statusCode: 510, code: "NotExtended" },
 	UNetworkAuthenticationRequiredError: { statusCode: 511, code: "NetworkAuthenticationRequired" },
-	UBadDigestError: { statusCode: 400, code: "Error" },
-	UBadMethodError: { statusCode: 405, code: "Error" },
-	UConnectTimeoutError: { statusCode: 408, code: "Error" },
-	UInternalError: { statusCode: 500, code: "Error" },
-	UInvalidArgumentError: { statusCode: 409, code: "Error" },
-	UInvalidContentError: { statusCode: 400, code: "Error" },
-	UInvalidCredentialsError: { statusCode: 401, code: "Error" },
-	UInvalidHeaderError: { statusCode: 400, code: "Error" },
-	UInvalidVersionError: { statusCode: 400, code: "Error" },
-	UMissingParameterError: { statusCode: 409, code: "Error" },
-	UNotAuthorizedError: { statusCode: 403, code: "Error" },
-	URequestExpiredError: { statusCode: 400, code: "Error" },
-	URequestThrottledError: { statusCode: 429, code: "Error" },
-	UResourceNotFoundError: { statusCode: 404, code: "Error" },
-	UWrongAcceptError: { statusCode: 406, code: "Error" }
+	UBadDigestError: { statusCode: 400, code: "BadDigest" },
+	UBadMethodError: { statusCode: 405, code: "BadMethod" },
+	UConnectTimeoutError: { statusCode: 408, code: "ConnectTimeout" },
+	UInternalError: { statusCode: 500, code: "Internal" },
+	UInvalidArgumentError: { statusCode: 409, code: "InvalidArgument" },
+	UInvalidContentError: { statusCode: 400, code: "InvalidContent" },
+	UInvalidCredentialsError: { statusCode: 401, code: "InvalidCredentials" },
+	UInvalidHeaderError: { statusCode: 400, code: "InvalidHeader" },
+	UInvalidVersionError: { statusCode: 400, code: "InvalidVersion" },
+	UMissingParameterError: { statusCode: 409, code: "MissingParameter" },
+	UNotAuthorizedError: { statusCode: 403, code: "NotAuthorized" },
+	URequestExpiredError: { statusCode: 400, code: "RequestExpired" },
+	URequestThrottledError: { statusCode: 429, code: "RequestThrottled" },
+	UResourceNotFoundError: { statusCode: 404, code: "ResourceNotFound" },
+	UWrongAcceptError: { statusCode: 406, code: "WrongAccept" }
 };
 const crypto = require("crypto");
 
@@ -65,7 +65,7 @@ module.exports = Object.keys(errorMap).reduce((acc, key) => {
 	acc[key] = class extends Error {
 		constructor(message) {
 			super(message);
-			this.uuid = crypto.randomBytes(20).toString("hex");
+			this.eid = crypto.randomBytes(20).toString("hex");
 			this.code = code;
 			this.statusCode = statusCode;
 		}

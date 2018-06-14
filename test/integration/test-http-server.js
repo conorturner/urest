@@ -38,7 +38,6 @@ describe("HTTP Server", () => {
 
 		request(options)
 			.then(result => {
-				console.log(result);
 				done();
 			})
 			.catch(done);
@@ -93,7 +92,8 @@ describe("HTTP Server", () => {
 			.catch(err => {
 				expect(err.statusCode).to.equal(404);
 				done();
-			});
+			})
+			.catch(done);
 
 	});
 
@@ -108,7 +108,7 @@ describe("HTTP Server", () => {
 			.then(done)
 			.catch(err => {
 				expect(err.statusCode).to.equal(500);
-				console.log("err", err.error.eid);
+				expect(err.error.eid).to.be.a("string");
 				done();
 			})
 			.catch(done);
@@ -190,7 +190,8 @@ describe("HTTP Server", () => {
 				expect(err.statusCode).to.deep.equal(500);
 				expect(err.error.eid).to.be.a("string");
 				done();
-			});
+			})
+			.catch(done);
 
 	});
 
