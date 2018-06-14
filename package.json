@@ -12,7 +12,9 @@
   "keywords": [
     "rest",
     "urest",
-    "gcf"
+    "gcf",
+    "http",
+    "lambda"
   ],
   "author": "Conor Turner",
   "license": "ISC",
