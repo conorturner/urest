@@ -19,10 +19,18 @@ const app = new Rest();
 
 app.pre(JsonBodyParser.middleware());
 app.get('/', (req, res) => res.send({message: 'Hello World'}));
-
-app.native().listen(8000); // Run as native node http server
-return app.lambda(e, context); // return promise from http lambda function
-module.exports = app.gcf(); // export for http google cloud function
+```
+#### Native HTTP server
+```javascript
+app.native().listen(8000);
+```
+#### AWS Lambda
+```javascript
+return app.lambda(e, context);
+```
+#### Google Cloud Functions
+```javascript
+module.exports = app.gcf();
 ```
 
 ### UErrors
