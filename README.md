@@ -5,13 +5,13 @@ The zero dependancy rest frame work from the future.
 [![npm](https://img.shields.io/npm/dt/urest.svg?style=for-the-badge)](https://www.npmjs.com/package/urest)
 [![Travis](https://img.shields.io/travis/conorturner/urest.svg?style=for-the-badge)](https://travis-ci.org/conorturner/urest)
 
-### Install
+## Install
 
 ```bash
 $ npm install urest
 ```
 
-### Basic App
+## Basic App
 
 ```javascript
 const { Rest, JsonBodyParser } = require("urest");
@@ -34,7 +34,7 @@ return app.lambda(e, context);
 module.exports = app.gcf();
 ```
 
-### UErrors
+## UErrors
 Errors passed into the next function will be logged, then returned to the client obscured behind a unique ID.
 ```javascript
 const { UErrors } = require("urest");
