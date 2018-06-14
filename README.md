@@ -5,13 +5,13 @@ The zero dependancy rest frame work from the future.
 [![npm](https://img.shields.io/npm/dt/urest.svg?style=for-the-badge)](https://www.npmjs.com/package/urest)
 [![Travis](https://img.shields.io/travis/conorturner/urest.svg?style=for-the-badge)](https://travis-ci.org/conorturner/urest)
 
-### Install
+## Install
 
 ```bash
 $ npm install urest
 ```
 
-### Basic App
+## Basic App
 
 ```javascript
 const { Rest, JsonBodyParser } = require("urest");
@@ -34,7 +34,7 @@ return app.lambda(e, context);
 module.exports = app.gcf();
 ```
 
-### UErrors
+## UErrors
 Errors passed into the next function will be logged, then returned to the client obscured behind a unique ID.
 ```javascript
 const { UErrors } = require("urest");
@@ -42,4 +42,32 @@ const { UInternalServerError } = UErrors;
 
 app.get("/broken", (req, res, next) => next(new UInternalServerError("This is logged")));
 
+```
+#### Response
+```json
+// 500
+{
+    "code":"InternalServer",
+    "eid":"3ccf6fadf79875f58631a8c7ecc302523b563423"
+}
+```
+#### Log
+```
+{ Error: Error: This is logged
+    at runHandler (/urest/library/Rest.js:68:18)
+    at next (/urest/library/Rest.js:76:4)
+    at IncomingMessage.req.on.on (/urest/library/JsonBodyParser.js:17:6)
+    at emitNone (events.js:106:13)
+    at IncomingMessage.emit (events.js:208:7)
+    at endReadableNT (_stream_readable.js:1056:12)
+    at _combinedTickCallback (internal/process/next_tick.js:138:11)
+    at process._tickCallback (internal/process/next_tick.js:180:9)
+  eid: '3ccf6fadf79875f58631a8c7ecc302523b563423',
+  code: 'InternalServer',
+  statusCode: 500,
+  level: 'error',
+  request_id: '1db31695e77da813550f8210253a99ed81312f4a',
+  service: "my-service",
+  environment: 'develop'
+}
 ```
