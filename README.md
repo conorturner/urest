@@ -48,6 +48,26 @@ app.get("/broken", (req, res, next) => next(new UInternalServerError("This is lo
 // 500
 {
     "code":"InternalServer",
-    "eid":"e4402c94f77fefb9daa537c8f16a1c0fc9ebed4c"
+    "eid":"3ccf6fadf79875f58631a8c7ecc302523b563423"
+}
+```
+#### Log
+```
+{ Error: Error: This is logged
+    at runHandler (/urest/library/Rest.js:68:18)
+    at next (/urest/library/Rest.js:76:4)
+    at IncomingMessage.req.on.on (/urest/library/JsonBodyParser.js:17:6)
+    at emitNone (events.js:106:13)
+    at IncomingMessage.emit (events.js:208:7)
+    at endReadableNT (_stream_readable.js:1056:12)
+    at _combinedTickCallback (internal/process/next_tick.js:138:11)
+    at process._tickCallback (internal/process/next_tick.js:180:9)
+  eid: '3ccf6fadf79875f58631a8c7ecc302523b563423',
+  code: 'InternalServer',
+  statusCode: 500,
+  level: 'error',
+  request_id: '1db31695e77da813550f8210253a99ed81312f4a',
+  service: "my-service",
+  environment: 'develop'
 }
 ```
