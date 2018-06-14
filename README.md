@@ -43,3 +43,11 @@ const { UInternalServerError } = UErrors;
 app.get("/broken", (req, res, next) => next(new UInternalServerError("This is logged")));
 
 ```
+#### Response
+```json
+// 500
+{
+    "code":"InternalServer",
+    "eid":"e4402c94f77fefb9daa537c8f16a1c0fc9ebed4c"
+}
+```
