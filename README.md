@@ -1,6 +1,7 @@
 # urest
 
-The zero dependancy rest frame work from the future.
+URest is a zero dependency, fully featured, restful routing framework inspired by express and restify.
+The U in the name comes from the unqiue ids URest attaches to logs and errors in your application to assist in easy bug retrieval.
 
 [![npm](https://img.shields.io/npm/dt/urest.svg?style=for-the-badge)](https://www.npmjs.com/package/urest)
 [![Travis](https://img.shields.io/travis/conorturner/urest.svg?style=for-the-badge)](https://travis-ci.org/conorturner/urest)
@@ -11,8 +12,7 @@ The zero dependancy rest frame work from the future.
 $ npm install urest
 ```
 
-## Basic App
-
+### Basic App
 ```javascript
 const { Rest, JsonBodyParser } = require("urest");
 const app = new Rest();
@@ -21,15 +21,15 @@ app.pre(JsonBodyParser.middleware());
 app.get('/', (req, res) => res.send({message: 'Hello World'}));
 app.post("/echo", (req, res) => res.send(req.body));
 ```
-#### Native HTTP server
+### Native HTTP server
 ```javascript
 app.native().listen(8000);
 ```
-#### AWS Lambda
+### AWS Lambda
 ```javascript
 return app.lambda(e, context);
 ```
-#### Google Cloud Functions
+### Google Cloud Functions
 ```javascript
 module.exports = app.gcf();
 ```
