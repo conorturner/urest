@@ -1,21 +1,23 @@
 class JsonBodyParser {
 
-	static middleware(req, res, next) {
+	static middleware() {
+		return (req, res, next) => {
 
-		let body = [];
+			let body = [];
 
-		req
-			.on("data", (chunk) => body.push(chunk))
-			.on("end", () => {
-				try {
-					req.body = JSON.parse(Buffer.concat(body).toString());
-				}
-				catch (e) {
-				}
+			req
+				.on("data", (chunk) => body.push(chunk))
+				.on("end", () => {
+					try {
+						req.body = JSON.parse(Buffer.concat(body).toString());
+					}
+					catch (e) {
+					}
 
-				next();
-			});
+					next();
+				});
 
+		};
 	}
 
 }
