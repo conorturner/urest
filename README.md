@@ -17,7 +17,7 @@ $ npm install urest
 const { Rest, JsonBodyParser } = require("urest");
 const app = new Rest();
 
-app.pre(JsonBodyParser.middleware());
+app.pre(JsonBodyParser.middleware);
 app.get('/', (req, res) => res.send({message: 'Hello World'}));
 app.post("/echo", (req, res) => res.send(req.body));
 ```

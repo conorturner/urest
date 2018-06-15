@@ -8,7 +8,7 @@ describe("HTTP Server", () => {
 
 	const app = new Rest();
 
-	app.pre(JsonBodyParser.middleware());
+	app.pre(JsonBodyParser.middleware);
 	app.get("/broke", (req, res) => res.status(500).send({ error: "oh no" }));
 	app.get("/ubroke", (req, res, next) => next(new UInternalServerError(":(")));
 	app.get("/very-broke", (req, res, next) => {
