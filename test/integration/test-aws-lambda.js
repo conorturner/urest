@@ -5,7 +5,8 @@ const { UInternalServerError } = UErrors;
 
 describe("AWS Lambda", () => {
 
-	const app = new Rest();
+	const nullLog = () => null;
+	const app = new Rest({ log: { info: nullLog, error: nullLog } });
 
 	app.get("/broke", (req, res) => res.status(500).send({ error: "oh no" }));
 	app.get("/ubroke", (req, res, next) => next(new UInternalServerError(":(")));

@@ -35,13 +35,16 @@ class Rest extends Router {
 
 		const matched = this.routes
 			.filter(({ method }) => method === reqMethod.toLowerCase())
-			.map(({ handlers, regex, tokens }) => ({ handlers, tokens, match: regex.exec(reqPath) }))
+			.map(route => Object.assign(route, { match: route.regex.exec(reqPath) }))
 			.filter(({ match }) => match !== null)[0];
 
 		if (!matched) return res.status(404).send(); //TODO: make this customizable
 
 		const handlers = this.middleware.concat(matched.handlers);
+		const intercept = this.intercept.concat(matched.intercept);
+
 		req.params = this.getParams(matched.match, matched.tokens);
+		res.setIntercept(intercept);
 
 		this.runHandlers(req, res, handlers);
 	}

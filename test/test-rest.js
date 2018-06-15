@@ -4,9 +4,11 @@ const { expect } = require("chai");
 
 const { Rest, Router } = require("../index");
 
+// TODO: make this into cloud functions integration test
+
 describe("Test Rest", () => {
 
-	it("Basic App", (done) => {
+	it.skip("Basic App", (done) => {
 
 		const app = new Rest({ name: "test-service" });
 
@@ -49,7 +51,7 @@ describe("Test Rest", () => {
 
 	});
 
-	it("Error", (done) => {
+	it.skip("Error", (done) => {
 
 		const { UErrors } = require("../index");
 		const { UInternalServerError } = UErrors;

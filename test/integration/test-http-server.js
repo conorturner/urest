@@ -6,8 +6,12 @@ const request = require("request-promise-native");
 
 describe("HTTP Server", () => {
 
-	const app = new Rest();
+	const nullLog = () => null;
+	const app = new Rest({ log: { info: nullLog, error: nullLog } });
 
+	app.incpt(() => {
+
+	});
 	app.pre(JsonBodyParser.middleware());
 	app.get("/broke", (req, res) => res.status(500).send({ error: "oh no" }));
 	app.get("/ubroke", (req, res, next) => next(new UInternalServerError(":(")));
@@ -173,6 +177,29 @@ describe("HTTP Server", () => {
 	});
 
 	it("Throw in route", (done) => {
+
+		const options = {
+			method: "GET",
+			uri: "http://localhost:8000/very-broke",
+			headers: {
+				"cache-control": "no-cache",
+				"content-type": "application/json"
+			},
+			json: true
+		};
+
+		request(options)
+			.then(done)
+			.catch(err => {
+				expect(err.statusCode).to.deep.equal(500);
+				expect(err.error.eid).to.be.a("string");
+				done();
+			})
+			.catch(done);
+
+	});
+
+	it("intercept", (done) => {
 
 		const options = {
 			method: "GET",

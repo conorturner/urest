@@ -3,6 +3,7 @@ class Router {
 	constructor() {
 		this.routes = [];
 		this.middleware = [];
+		this.intercept = [];
 	}
 
 	use(path, router) {
@@ -10,12 +11,19 @@ class Router {
 
 		router.routes.forEach(route => {
 			route.handlers = router.middleware.concat(route.handlers);
-			this.routes.push(Object.assign({}, route, { path: path + route.path }, Router.parseRoute(path + route.path)));
+			route.intercept = router.intercept.concat(route.intercept);
+
+			const base = Object.assign({}, route, { path: path + route.path });
+			this.routes.push(Object.assign(base, Router.parseRoute(path + route.path)));
 		});
 	}
 
 	pre(middleware) {
 		this.middleware.push(middleware);
+	}
+
+	incpt(intercept) {
+		this.intercept.push(intercept);
 	}
 
 	get(...args) {
@@ -59,7 +67,7 @@ class Router {
 
 		const { tokens, regex } = Router.parseRoute(path);
 
-		this.routes.push({ regex, tokens, method, path, handlers });
+		this.routes.push({ regex, tokens, method, path, handlers, intercept: [] });
 	}
 
 	static parseRoute(path) {
