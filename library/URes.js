@@ -62,7 +62,7 @@ class URes extends EventEmitter {
 	send(...args) {
 		this.emit("res", this.res);
 		if (this.intercept && this.intercept.length > 0) {
-			console.log(this.intercept);
+			// console.log(this.intercept);
 			// console.log(this.intercept.length)
 		}
 
