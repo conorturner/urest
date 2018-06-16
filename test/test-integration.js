@@ -32,7 +32,7 @@ const bRouter = new Router();
 aRouter.route("/same").get((req, res) => res.send({ value: "a" }));
 bRouter.route("/same").get((req, res) => res.send({ value: "b" }));
 
-app.use("/", aRouter);
+app.use(aRouter);
 app.use("/b", bRouter);
 
 const runTests = (makeRequest) => {

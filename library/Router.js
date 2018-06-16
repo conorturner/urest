@@ -7,6 +7,10 @@ class Router {
 	}
 
 	use(path, router) {
+		if (path.constructor && path.constructor.name === "Router") {
+			router = path;
+			path = "/";
+		}
 		if (!(path && router)) throw new Error("Provide both path and router");
 
 		router.routes.forEach(route => {
