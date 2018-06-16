@@ -10,7 +10,6 @@ class URes extends EventEmitter {
 		this.zeroTime = process.hrtime();
 		this.statusCode = 200;
 		this.hasRunIntercept = false;
-		this.headersSent = false;
 		this.req = req;
 		this.res = res;
 
@@ -35,19 +34,34 @@ class URes extends EventEmitter {
 	}
 
 	runInterceptors(data) {
-		if (!this.intercept || this.intercept.length === 0) return Promise.resolve(data);
+		if (!this.intercept || this.intercept.length === 0) return false; // tell caller we didn't run
 		this.hasRunIntercept = true;
 
 		const { req } = this;
 		const res = this;
 
-		return this.intercept.reduce((promise, intercept) => promise.then(data => {
-			if (this.headersSent) return data; // don't run intercept if previous error, or if headers sent
+		const runIntercept = (next, i) => {
+			const intercept = this.intercept[i];
 
-			return intercept(req, res, data)
-				.catch(err => URes.returnError(new UInternalServerError(err), req, res));
+			try {
+				if (intercept) intercept(req, res, data, next);
+				else this.send(data); // send it, intercepts may have transformed it
+			}
+			catch (e) {
+				URes.returnError(new UInternalServerError(e), req, res);
+			}
+		};
 
-		}), Promise.resolve(data));
+		let i = 0;
+		const next = (err) => {
+			if (err) return URes.returnError(err, req, res);
+			i++;
+			runIntercept(next, i);
+		};
+
+		runIntercept(next, i);
+
+		return true; // tell caller we had something to run
 	}
 
 	initLambda({ e, callback }) {
@@ -91,13 +105,6 @@ class URes extends EventEmitter {
 	}
 
 	send(...args) {
-		const sendFunctor = (data) => { // finally do the send
-			if (this.headersSent) return;
-
-			this.headersSent = true;
-			this.emit("res", this.res);
-			this[send](data);
-		};
 
 		if (typeof args[0] === "number") {
 			this.statusCode = args[0];
@@ -106,8 +113,10 @@ class URes extends EventEmitter {
 
 		const [data] = args;
 
-		if (this.hasRunIntercept) sendFunctor(data);
-		else this.runInterceptors(data).then(sendFunctor);
+		if (this.hasRunIntercept || !this.runInterceptors(data)) {
+			this.emit("res", this.res);
+			this[send](data);
+		}
 
 		return this;
 	}

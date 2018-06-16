@@ -7,9 +7,13 @@ const nullLog = () => null;
 const app = new Rest({ log: { info: nullLog, error: nullLog } });
 // const app = new Rest();
 
-app.incpt((req, res, data) => {
-	if (req.headers["break-on-header"] === "true") return Promise.reject(new Error("Broke on header"));
-	else return Promise.resolve(data);
+app.incpt((req, res, data, next) => {
+	if (req.headers["break-on-header"] === "true") throw new Error("Broke on header");
+	else next();
+});
+app.incpt((req, res, data, next) => {
+	if (req.headers["append-to-body"] === "true") data.appended = ":)";
+	next();
 });
 app.pre(JsonBodyParser.middleware());
 app.get("/broke", (req, res) => res.status(500).send({ error: "oh no" }));
@@ -182,21 +186,41 @@ const runTests = (makeRequest) => {
 
 	});
 
-	it("intercept", (done) => {
+	describe("intercept", () => {
 
-		const path = "/";
-		const headers = {
-			"break-on-header": "true"
-		};
+		it("error in intercept", (done) => {
 
-		makeRequest({ path, headers })
-			.then(done)
-			.catch(err => {
-				expect(err.statusCode).to.deep.equal(500);
-				expect(err.error.eid).to.be.a("string");
-				done();
-			})
-			.catch(done);
+			const path = "/";
+			const headers = {
+				"break-on-header": "true"
+			};
+
+			makeRequest({ path, headers })
+				.then(done)
+				.catch(err => {
+					expect(err.statusCode).to.deep.equal(500);
+					expect(err.error.eid).to.be.a("string");
+					done();
+				})
+				.catch(done);
+
+		});
+
+		it("intercept transform body", (done) => {
+
+			const path = "/";
+			const headers = {
+				"append-to-body": "true"
+			};
+
+			makeRequest({ path, headers })
+				.then(result => {
+					expect(result).to.deep.equal({ appended: ":)" });
+					done();
+				})
+				.catch(done);
+
+		});
 
 	});
 
