@@ -1,7 +1,7 @@
 const { expect } = require("chai");
 const Log = require("../library/Log");
 
-describe.only("Log", () => {
+describe("Log", () => {
 
 	describe("info", () => {
 
