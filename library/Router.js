@@ -26,7 +26,7 @@ class Router {
 		this.middleware.push(middleware);
 	}
 
-	incpt(intercept) {
+	int(intercept) {
 		this.intercept.push(intercept);
 	}
 
@@ -50,7 +50,7 @@ class Router {
 		const self = this;
 		const miniRouter = {};
 
-		const proxyMethod = (method) => function (...args) {
+		const proxyMethod = (method) => function (...args) { // this is mad but good
 			self._addRoute(method, [path, ...args]);
 			return miniRouter;
 		};

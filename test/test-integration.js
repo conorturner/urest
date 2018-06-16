@@ -7,11 +7,11 @@ const nullLog = () => null;
 const app = new Rest({ log: { info: nullLog, error: nullLog } });
 // const app = new Rest();
 
-app.incpt((req, res, data, next) => {
+app.int((req, res, data, next) => {
 	if (req.headers["break-on-header"] === "true") throw new Error("Broke on header");
 	else next();
 });
-app.incpt((req, res, data, next) => {
+app.int((req, res, data, next) => {
 	if (req.headers["append-to-body"] === "true") data.appended = ":)";
 	next();
 });
@@ -25,6 +25,18 @@ app.get("/very-broke", (req, res, next) => {
 app.get("/", (req, res) => res.send({}));
 app.get("/query", (req, res) => res.send(req.query));
 app.post("/upost", (req, res) => res.send(req.body));
+
+app.post("/multi",
+	(req, res, next) => {
+		Object.assign(req.body, { a: "a" });
+		next();
+	},
+	(req, res, next) => {
+		Object.assign(req.body, { b: "b" });
+		next();
+	},
+	(req, res) => res.send(req.body)
+);
 
 const aRouter = new Router();
 const bRouter = new Router();
@@ -185,6 +197,23 @@ const runTests = (makeRequest) => {
 			.catch(done);
 
 	});
+
+	it("multiple handlers", (done) => {
+
+		const method = "POST";
+		const path = "/multi";
+		const body = {};
+
+		makeRequest({ method, path, body })
+			.then(result => {
+				// console.log(JSON.stringify(result));
+				expect(result).to.deep.equal({ a: "a", b: "b" });
+				done();
+			})
+			.catch(done);
+
+	});
+
 
 	describe("intercept", () => {
 
