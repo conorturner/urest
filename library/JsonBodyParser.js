@@ -7,25 +7,24 @@ class JsonBodyParser {
 					return JSON.parse(body);
 				}
 				catch (e) {
+					return body;
 				}
 			};
 
-			if (req.headers["content-type"] !== "application/json") return next();
-
+			if (req.headers["content-type"] && req.headers["content-type"] !== "application/json") return next();
 			if (req.body) {
 				req.body = tryParse(req.body);
-				next();
+				return next();
 			}
-			else {
-				let body = [];
-				req
-					.on("data", (chunk) => body.push(chunk))
-					.on("end", () => {
-						req.body = tryParse(Buffer.concat(body));
-						next();
-					});
-			}
+			if (!req.on) return next();
 
+			let body = [];
+			req
+				.on("data", (chunk) => body.push(chunk))
+				.on("end", () => {
+					req.body = tryParse(Buffer.concat(body));
+					next();
+				});
 		};
 	}
 

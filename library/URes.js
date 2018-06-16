@@ -6,7 +6,7 @@ class URes extends EventEmitter {
 
 	constructor({ req, res, callback }) {
 		super();
-		this.zero = process.hrtime();
+		this.zeroTime = process.hrtime();
 		this.statusCode = 200;
 		this.req = req;
 		this.res = res;
@@ -17,6 +17,11 @@ class URes extends EventEmitter {
 
 	setIntercept(intercept) {
 		this.intercept = intercept;
+	}
+
+	runInterceptors(data) {
+		if (!this.intercept || this.intercept.length === 0) return Promise.resolve(data);
+		return Promise.resolve(data);
 	}
 
 	initLambda({ e, callback }) {
@@ -61,12 +66,7 @@ class URes extends EventEmitter {
 
 	send(...args) {
 		this.emit("res", this.res);
-		if (this.intercept && this.intercept.length > 0) {
-			// console.log(this.intercept);
-			// console.log(this.intercept.length)
-		}
-
-		this[send](...args);
+		this.runInterceptors(...args).then(transformed => this[send](transformed));
 	}
 
 	status(statusCode) {

@@ -15,18 +15,11 @@ class UReq {
 	static lambda(e, self) {
 		const { headers, path, httpMethod, body, queryStringParameters } = e;
 
-		let parsedBody;
-		try {
-			parsedBody = body ? JSON.parse(body) : undefined;
-		}
-		catch (e) {
-		}
-
 		Object.assign(self, {
 			headers,
 			path,
 			method: httpMethod,
-			body: parsedBody,
+			body,
 			query: queryStringParameters === null ? {} : queryStringParameters
 		});
 	}
