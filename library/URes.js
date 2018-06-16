@@ -12,6 +12,7 @@ class URes extends EventEmitter {
 		this.hasRunIntercept = false;
 		this.req = req;
 		this.res = res;
+		this.responseData = undefined;
 
 		if (res) this.initNative({ req, res });
 		if (callback) this.initLambda({ req, callback });
@@ -33,7 +34,7 @@ class URes extends EventEmitter {
 		this.intercept = intercept;
 	}
 
-	runInterceptors(data) {
+	runInterceptors() {
 		if (!this.intercept || this.intercept.length === 0) return false; // tell caller we didn't run
 		this.hasRunIntercept = true;
 
@@ -44,8 +45,8 @@ class URes extends EventEmitter {
 			const intercept = this.intercept[i];
 
 			try {
-				if (intercept) intercept(req, res, data, next);
-				else this.send(data); // send it, intercepts may have transformed it
+				if (intercept) intercept(req, res, next);
+				else this.send(this.responseData); // send it, intercepts may have transformed it
 			}
 			catch (e) {
 				URes.returnError(new UInternalServerError(e), req, res);
@@ -105,17 +106,17 @@ class URes extends EventEmitter {
 	}
 
 	send(...args) {
-
 		if (typeof args[0] === "number") {
 			this.statusCode = args[0];
 			args[0] = args[1];
 		}
 
 		const [data] = args;
+		this.responseData = data;
 
-		if (this.hasRunIntercept || !this.runInterceptors(data)) {
+		if (this.hasRunIntercept || !this.runInterceptors()) {
 			this.emit("res", this.res);
-			this[send](data);
+			this[send](this.responseData);
 		}
 
 		return this;

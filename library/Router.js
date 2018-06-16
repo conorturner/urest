@@ -48,21 +48,21 @@ class Router {
 
 	route(path) {
 		const self = this;
-		const miniRouter = {};
+		const proxyRouter = {};
 
 		const proxyMethod = (method) => function (...args) { // this is mad but good
 			self._addRoute(method, [path, ...args]);
-			return miniRouter;
+			return proxyRouter;
 		};
 
-		Object.assign(miniRouter, {
+		Object.assign(proxyRouter, {
 			get: proxyMethod("get"),
 			put: proxyMethod("put"),
 			post: proxyMethod("post"),
 			delete: proxyMethod("delete")
 		});
 
-		return miniRouter;
+		return proxyRouter;
 	}
 
 	_addRoute(method, args) {

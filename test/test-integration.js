@@ -7,12 +7,16 @@ const nullLog = () => null;
 const app = new Rest({ log: { info: nullLog, error: nullLog } });
 // const app = new Rest();
 
-app.int((req, res, data, next) => {
+app.int((req, res, next) => {
 	if (req.headers["break-on-header"] === "true") throw new Error("Broke on header");
 	else next();
 });
-app.int((req, res, data, next) => {
-	if (req.headers["append-to-body"] === "true") data.appended = ":)";
+app.int((req, res, next) => {
+	if (req.headers["append-to-body"] === "true") res.responseData.appended = ":)";
+	next();
+});
+app.int((req, res, next) => {
+	if (req.headers.swap === "true") res.responseData = { replace: true };
 	next();
 });
 app.pre(JsonBodyParser.middleware());
@@ -214,7 +218,6 @@ const runTests = (makeRequest) => {
 
 	});
 
-
 	describe("intercept", () => {
 
 		it("error in intercept", (done) => {
@@ -245,6 +248,22 @@ const runTests = (makeRequest) => {
 			makeRequest({ path, headers })
 				.then(result => {
 					expect(result).to.deep.equal({ appended: ":)" });
+					done();
+				})
+				.catch(done);
+
+		});
+
+		it("intercept transform body", (done) => {
+
+			const path = "/";
+			const headers = {
+				swap: "true"
+			};
+
+			makeRequest({ path, headers })
+				.then(result => {
+					expect(result).to.deep.equal({ replace: true });
 					done();
 				})
 				.catch(done);
