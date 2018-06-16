@@ -4,13 +4,16 @@ const { Rest, Router, UErrors, JsonBodyParser } = require("../index");
 const { UInternalServerError } = UErrors;
 const request = require("request-promise-native");
 const nullLog = () => null;
-// const app = new Rest({ log: { info: nullLog, error: nullLog } });
-const app = new Rest();
+const app = new Rest({ log: { info: nullLog, error: nullLog } });
+// const app = new Rest();
 
-// app.incpt(() => {
-// });
+app.incpt((req, res, data) => {
+	if (req.headers["break-on-header"] === "true") return Promise.reject(new Error("Broke on header"));
+	else return Promise.resolve(data);
+});
 app.pre(JsonBodyParser.middleware());
 app.get("/broke", (req, res) => res.status(500).send({ error: "oh no" }));
+app.get("/broke2", (req, res) => res.sendStatus(500));
 app.get("/ubroke", (req, res, next) => next(new UInternalServerError(":(")));
 app.get("/very-broke", (req, res, next) => {
 	throw new Error("Very broken");
@@ -57,6 +60,20 @@ const runTests = (makeRequest) => {
 	});
 
 	it("res.status.send", (done) => {
+
+		const path = "/broke";
+
+		makeRequest({ path })
+			.then(done)
+			.catch(err => {
+				expect(err.statusCode).to.equal(500);
+				done();
+			})
+			.catch(done);
+
+	});
+
+	it("res.sendStatus", (done) => {
 
 		const path = "/broke";
 
@@ -167,9 +184,12 @@ const runTests = (makeRequest) => {
 
 	it("intercept", (done) => {
 
-		const path = "/very-broke";
+		const path = "/";
+		const headers = {
+			"break-on-header": "true"
+		};
 
-		makeRequest({ path })
+		makeRequest({ path, headers })
 			.then(done)
 			.catch(err => {
 				expect(err.statusCode).to.deep.equal(500);

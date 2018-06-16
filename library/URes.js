@@ -1,4 +1,5 @@
 const EventEmitter = require("events");
+const { UInternalServerError } = require("./UErrors");
 
 const send = Symbol();
 
@@ -8,11 +9,25 @@ class URes extends EventEmitter {
 		super();
 		this.zeroTime = process.hrtime();
 		this.statusCode = 200;
+		this.hasRunIntercept = false;
+		this.headersSent = false;
 		this.req = req;
 		this.res = res;
 
 		if (res) this.initNative({ req, res });
 		if (callback) this.initLambda({ req, callback });
+	}
+
+	static returnError(err, req, res) {
+
+		req.log.error(err);
+
+		const body = {
+			code: err.code,
+			eid: err.eid
+		};
+
+		res.status(err.statusCode).send(body);
 	}
 
 	setIntercept(intercept) {
@@ -21,7 +36,18 @@ class URes extends EventEmitter {
 
 	runInterceptors(data) {
 		if (!this.intercept || this.intercept.length === 0) return Promise.resolve(data);
-		return Promise.resolve(data);
+		this.hasRunIntercept = true;
+
+		const { req } = this;
+		const res = this;
+
+		return this.intercept.reduce((promise, intercept) => promise.then(data => {
+			if (this.headersSent) return data; // don't run intercept if previous error, or if headers sent
+
+			return intercept(req, res, data)
+				.catch(err => URes.returnError(new UInternalServerError(err), req, res));
+
+		}), Promise.resolve(data));
 	}
 
 	initLambda({ e, callback }) {
@@ -65,8 +91,25 @@ class URes extends EventEmitter {
 	}
 
 	send(...args) {
-		this.emit("res", this.res);
-		this.runInterceptors(...args).then(transformed => this[send](transformed));
+		const sendFunctor = (data) => { // finally do the send
+			if (this.headersSent) return;
+
+			this.headersSent = true;
+			this.emit("res", this.res);
+			this[send](data);
+		};
+
+		if (typeof args[0] === "number") {
+			this.statusCode = args[0];
+			args[0] = args[1];
+		}
+
+		const [data] = args;
+
+		if (this.hasRunIntercept) sendFunctor(data);
+		else this.runInterceptors(data).then(sendFunctor);
+
+		return this;
 	}
 
 	status(statusCode) {
@@ -78,6 +121,7 @@ class URes extends EventEmitter {
 		this.statusCode = statusCode;
 		this.send();
 	}
+
 }
 
 module.exports = URes;

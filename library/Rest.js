@@ -68,29 +68,18 @@ class Rest extends Router {
 				if (handler) handler(req, res, next);
 			}
 			catch (e) {
-				Rest.onError(new UInternalServerError(e), req, res);
+				URes.returnError(new UInternalServerError(e), req, res);
 			}
 		};
 
 		let i = 0;
 		const next = (err) => {
-			if (err) return Rest.onError(err, req, res);
+			if (err) return URes.returnError(err, req, res);
 			i++;
 			runHandler(next, i);
 		};
 
 		runHandler(next, i);
-	}
-
-	static onError(err, req, res) {
-		req.log.error(err);
-
-		const body = {
-			code: err.code,
-			eid: err.eid
-		};
-
-		res.status(err.statusCode).send(body);
 	}
 
 	gcf() {
@@ -100,7 +89,8 @@ class Rest extends Router {
 	lambda(e) {
 		return new Promise(callback => {
 			const req = new UReq({ e });
-			const res = new URes({ e, callback });
+			const res = new URes({ e, callback, req });
+
 
 			this.query(req, res);
 		});
@@ -108,7 +98,7 @@ class Rest extends Router {
 
 	native() {
 		const http = require("http");
-		const server = http.createServer((req, res) => this.query(new UReq({ req }), new URes({ res })));
+		const server = http.createServer((req, res) => this.query(new UReq({ req, res }), new URes({ req, res })));
 		server.on("clientError", (err, socket) => socket.end("HTTP/1.1 400 Bad Request\r\n\r\n"));
 		return server;
 	}

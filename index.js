@@ -1,11 +1,4 @@
-const UErrors = require("./library/UErrors");
-const Rest = require("./library/Rest");
-const Router = require("./library/Router");
-const JsonBodyParser = require("./library/JsonBodyParser");
-
-module.exports = {
-	UErrors,
-	Rest,
-	Router,
-	JsonBodyParser
-};
+module.exports.UErrors = require("./library/UErrors");
+module.exports.Rest = require("./library/Rest");
+module.exports.Router = require("./library/Router");
+module.exports.JsonBodyParser = require("./library/JsonBodyParser");
