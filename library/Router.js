@@ -1,3 +1,6 @@
+const addRoute = Symbol();
+const parseRoute = Symbol();
+
 class Router {
 
 	constructor() {
@@ -18,7 +21,7 @@ class Router {
 			route.intercept = router.intercept.concat(route.intercept);
 
 			const base = Object.assign({}, route, { path: path + route.path });
-			this.routes.push(Object.assign(base, Router.parseRoute(path + route.path)));
+			this.routes.push(Object.assign(base, Router[parseRoute](path + route.path)));
 		});
 	}
 
@@ -31,19 +34,19 @@ class Router {
 	}
 
 	get(...args) {
-		this._addRoute("get", args);
+		this[addRoute]("get", args);
 	}
 
 	put(...args) {
-		this._addRoute("put", args);
+		this[addRoute]("put", args);
 	}
 
 	post(...args) {
-		this._addRoute("post", args);
+		this[addRoute]("post", args);
 	}
 
 	delete(...args) {
-		this._addRoute("delete", args);
+		this[addRoute]("delete", args);
 	}
 
 	route(path) {
@@ -51,7 +54,7 @@ class Router {
 		const proxyRouter = {};
 
 		const proxyMethod = (method) => function (...args) { // this is mad but good
-			self._addRoute(method, [path, ...args]);
+			self[addRoute](method, [path, ...args]);
 			return proxyRouter;
 		};
 
@@ -65,16 +68,16 @@ class Router {
 		return proxyRouter;
 	}
 
-	_addRoute(method, args) {
+	[addRoute](method, args) {
 		if (typeof args[0] !== "string") throw new Error("first arg must be string");
 		const [path, ...handlers] = args;
 
-		const { tokens, regex } = Router.parseRoute(path);
+		const { tokens, regex } = Router[parseRoute](path);
 
 		this.routes.push({ regex, tokens, method, path, handlers, intercept: [] });
 	}
 
-	static parseRoute(path) {
+	static [parseRoute](path) {
 		const tokens = path
 			.split("/")
 			.filter(token => token !== "")

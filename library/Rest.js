@@ -91,7 +91,6 @@ class Rest extends Router {
 			const req = new UReq({ e });
 			const res = new URes({ e, callback, req });
 
-
 			this.query(req, res);
 		});
 	}
