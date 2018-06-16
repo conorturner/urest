@@ -1,5 +1,3 @@
-
-
 const {
 	NODE_ENV = "develop",
 	FUNCTION_NAME,
@@ -8,55 +6,74 @@ const {
 
 const crypto = require("crypto");
 
+const parse = Symbol();
+const parseError = Symbol();
+const write = Symbol();
+const log = Symbol();
+
 class Log {
-	constructor(headers) {
+	constructor({ headers = {}, level, service = SERVICE_NAME } = {}) {
 		this.city = headers["x-appengine-city"];
 		this.country = headers["x-appengine-country"] || headers["CloudFront-Viewer-Country"];
 		this.request_id = crypto.randomBytes(20).toString("hex");
 		this.user_ip = headers["x-appengine-user-ip"];
+		this.stream = process.stdout;
+		this.level = level;
+		this.service = service;
 	}
 
-	fatal(fatal) {
-		console.error(this.sanitise({ fatal }, true)); // probs wanna log this as json too for searching
+	[log](data, level) {
+		if (level < this.level) return;
+		this[write](this[parse](data, level));
 	}
 
-	error(error) {
-		console.error(this.sanitise({ error }, true)); // probs wanna log this as json too for searching
+	[parse](data, level) {
+		const base = Object.assign({ level }, this.getBase());
+
+		if (typeof data === "string") data = { message: data }; // make it an object so we can assign it
+		if (level > Log.Level.INFO && !(data instanceof Error)) data = this[parseError](data);
+		if (data instanceof Error) data = this[parseError](data);
+
+		return JSON.stringify(Object.assign(base, data, { stack: data.stack }));
 	}
 
-	warn(warn) {
-		console.log(this.sanitise({ warn }));
+	[parseError](error) {
+		if (!error.stack) Error.captureStackTrace(error);
+		return { stack: error.stack, message: error.message };
 	}
 
-	info(info) {
-		console.log(this.sanitise({ info }));
+	[write](string) {
+		this.stream.write(string);
 	}
 
-	debug(debug) {
-		console.log(this.sanitise({ debug }));
+	fatal(data) {
+		this[log](data, Log.Level.FATAL);
 	}
 
-	sanitise(obj, reportError) {
-		return Object.keys(obj).map(key => {
-			const base = Object.assign({ level: key }, this.getBase());
+	error(data) {
+		this[log](data, Log.Level.ERROR);
+	}
 
-			if (reportError) {
-				if (!(obj[key] instanceof Error)) obj[key] = new Error(obj[key]);
-				obj[key].level = key;
-				return Object.assign(obj[key], base);
-			}
-			
-			if (typeof obj[key] !== "object") obj[key] = { [key]: obj[key] }; // make it an object so we can assign it
-			return JSON.stringify(Object.assign(base, obj[key]));
+	warn(data) {
+		this[log](data, Log.Level.WARN);
+	}
 
-			
-		})[0];
+	info(data) {
+		this[log](data, Log.Level.INFO);
+	}
+
+	debug(data) {
+		this[log](data, Log.Level.DEBUG);
+	}
+
+	trace(data) {
+		this[log](data, Log.Level.TRACE);
 	}
 
 	getBase() {
 		return {
 			request_id: this.request_id,
-			service: SERVICE_NAME,
+			service: this.service,
 			environment: NODE_ENV,
 			city: this.city,
 			country: this.country,
@@ -65,6 +82,14 @@ class Log {
 	}
 }
 
+Log.Level = {
+	ALL: 0,
+	TRACE: 100,
+	DEBUG: 200,
+	INFO: 300,
+	WARN: 400,
+	ERROR: 500,
+	FATAL: 600
+};
 
 module.exports = Log;
-

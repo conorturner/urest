@@ -115,7 +115,7 @@ class URes extends EventEmitter {
 		this.responseData = data;
 
 		if (this.hasRunIntercept || !this.runInterceptors()) {
-			this.emit("res", this.res);
+			this.emit("response", this);
 			this[send](this.responseData);
 		}
 

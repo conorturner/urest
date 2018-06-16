@@ -3,9 +3,7 @@ const { expect } = require("chai");
 const { Rest, Router, UErrors, JsonBodyParser } = require("../index");
 const { UInternalServerError } = UErrors;
 const request = require("request-promise-native");
-const nullLog = () => null;
-const app = new Rest({ log: { info: nullLog, error: nullLog } });
-// const app = new Rest();
+const app = new Rest({ logRequests: true });
 
 app.int((req, res, next) => {
 	if (req.headers["break-on-header"] === "true") throw new Error("Broke on header");

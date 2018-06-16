@@ -3,32 +3,40 @@ const { UInternalServerError } = require("./UErrors");
 const Log = require("./Log");
 const UReq = require("./UReq");
 const URes = require("./URes");
-const EventEmitter = require("events");
 
 const defaultName = process.env.FUNCTION_NAME || process.env.AWS_LAMBDA_FUNCTION_NAME;
 
+const logRequest = Symbol();
+const logResponse = Symbol();
+
 class Rest extends Router {
-	constructor({ name = defaultName, log } = {}) {
+	constructor({ name = defaultName, log, logRequests } = {}) {
 		super();
 		this.name = name;
 		this.log = log;
-		this.eventEmitter = new EventEmitter();
+		this.logRequests = logRequests;
 	}
 
-	on(event, functor) {
-		this.eventEmitter(event, functor);
+	[logRequest](req) {
+		req.log.info({ event: "Request", method: req.method, path: req.path || req.url, body: req.body });
+	}
+
+	[logResponse](req, res) {
+		//TODO: some clever stuff to handle other body types than json here
+		const diff = process.hrtime(res.zeroTime);
+		const duration = (diff[0] * 1e9 + diff[1])/1e6;
+
+		req.log.info({ event: "Response", status: res.statusCode, body: res.body, duration });
 	}
 
 	query(req, res) {
-		this.eventEmitter.emit("req", req); // emit req first of all
-
 		if (this.log) req.log = this.log;
-		else {
-			const log = new Log(req.headers);
-			log.info({ event: "Request", method: req.method, path: req.path || req.url, body: req.body });
-			req.log = log;
-		}
+		else req.log = new Log({ headers: req.headers });
 
+		if (this.logRequests) {
+			this[logRequest](req);
+			res.on("response", () => this[logResponse](req, res));
+		}
 
 		const reqUrl = req.url;
 		const { method: reqMethod, path: reqPath = reqUrl } = req;
