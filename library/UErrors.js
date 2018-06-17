@@ -1,23 +1,11 @@
 const crypto = require("crypto");
+const util = require("util");
 
 function UError(message) {
 	this.eid = crypto.randomBytes(20).toString("hex");
 	this.message = message;
 	Error.captureStackTrace(this);
-
 }
-
-UError.prototype.output = function (safe = false) {
-	return {
-		eid: this.eid,
-		message: this.statusCode > 499 && safe ? undefined : this.message,
-		stack: safe ? undefined : this.stack,
-		statusCode: this.statusCode,
-		code: this.code
-	};
-};
-
-const util = require("util");
 
 const buildProto = (data) => function (message) {
 	UError.call(this, message);
