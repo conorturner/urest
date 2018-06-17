@@ -99,7 +99,9 @@ class URes extends EventEmitter {
 				res.end(); // TODO: have it send some json here
 			}
 			else {
-				res.writeHead(this.statusCode, Object.assign(this.headers, { "Content-Type": "application/json" }));
+				if (ret && ret.prototype && ret.prototype.isPrototypeOf(Buffer)) res.writeHead(this.statusCode, this.headers);
+				else res.writeHead(this.statusCode, Object.assign(this.headers, { "Content-Type": "application/json" }));
+
 				res.end(JSON.stringify(ret));
 			}
 

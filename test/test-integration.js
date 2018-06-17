@@ -3,7 +3,7 @@ const { expect } = require("chai");
 const { Rest, Router, UErrors, JsonBodyParser } = require("../index");
 const { UInternalServerError } = UErrors;
 const { URequest } = require("urequest");
-const app = new Rest({ logRequests: true });
+const app = new Rest({ logRequests: false });
 
 app.int((req, res, next) => {
 	if (req.headers["break-on-header"] === "true") throw new Error("Broke on header");
@@ -20,6 +20,7 @@ app.int((req, res, next) => {
 app.pre(JsonBodyParser.middleware());
 app.get("/broke", (req, res) => res.status(500).send({ error: "oh no" }));
 app.get("/broke2", (req, res) => res.sendStatus(500));
+app.get("/buffer", (req, res) => res.send(new Buffer("testing123")));
 app.get("/ubroke", (req, res, next) => next(new UInternalServerError(":(")));
 app.get("/very-broke", (req, res, next) => {
 	throw new Error("Very broken");
@@ -59,6 +60,16 @@ const runTests = (makeRequest) => {
 
 		makeRequest({ path: "/" })
 			.then(result => {
+				done();
+			})
+			.catch(done);
+	});
+
+	it("res.send buffer", (done) => {
+
+		makeRequest({ path: "/buffer" })
+			.then(result => {
+				console.log(result)
 				done();
 			})
 			.catch(done);
