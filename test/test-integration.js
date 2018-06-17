@@ -1,7 +1,7 @@
 const { expect } = require("chai");
 
 const { Rest, Router, UErrors, JsonBodyParser } = require("../index");
-const { UInternalServerError } = UErrors;
+const { UInternalServerError, U } = UErrors;
 const request = require("request-promise-native");
 const app = new Rest({ logRequests: true });
 
