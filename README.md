@@ -58,7 +58,7 @@ app.get("/broken", (req, res, next) => next(new UInternalServerError("This is lo
     "request_id":"1a376e5eb266511a35aefcc7ffad7d50aef5df40",
     "environment":"develop",
     "service": "my-service",
-    "stack":"Error: Error: Very broken\n    at Object.UError (/Users/conorturner/projects/npm-modules/urest/library/UErrors.js:7:8)\n    at new <anonymous> (/Users/conorturner/projects/npm-modules/urest/library/UErrors.js:11:9)\n    at runHandler (/Users/conorturner/projects/npm-modules/urest/library/Rest.js:79:22)\n    at next (/Users/conorturner/projects/npm-modules/urest/library/Rest.js:87:4)\n    at IncomingMessage.req.on.on (/Users/conorturner/projects/npm-modules/urest/library/JsonBodyParser.js:26:6)\n    at emitNone (events.js:106:13)\n    at IncomingMessage.emit (events.js:208:7)\n    at endReadableNT (_stream_readable.js:1056:12)\n    at _combinedTickCallback (internal/process/next_tick.js:138:11)\n    at process._tickCallback (internal/process/next_tick.js:180:9)",
+    "stack":"Error: Error: Very broken\n    at Object.UError (urest/library/UErrors.js:7:8)\n    at new <anonymous> (urest/library/UErrors.js:11:9)\n    at runHandler (urest/library/Rest.js:79:22)\n    at next (urest/library/Rest.js:87:4)\n    at IncomingMessage.req.on.on (urest/library/JsonBodyParser.js:26:6)\n    at emitNone (events.js:106:13)\n    at IncomingMessage.emit (events.js:208:7)\n    at endReadableNT (_stream_readable.js:1056:12)\n    at _combinedTickCallback (internal/process/next_tick.js:138:11)\n    at process._tickCallback (internal/process/next_tick.js:180:9)",
     "message":{
 
     },
@@ -73,6 +73,7 @@ Interceptors works in much the same way as middleware but act on the response be
 The value passed into res.send is attached as res.responseData, the following example check for a property in the response and prevents the request if not true.
 ```javascript
 const { UUnauthorizedError } = UErrors;
+
 app.int((req, res, next) => {
 	if (res.responseData.authed !== true) next(new UUnauthorizedError());
 	else next();
