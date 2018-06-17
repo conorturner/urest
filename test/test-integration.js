@@ -1,8 +1,8 @@
 const { expect } = require("chai");
 
 const { Rest, Router, UErrors, JsonBodyParser } = require("../index");
-const { UInternalServerError, U } = UErrors;
-const request = require("request-promise-native");
+const { UInternalServerError } = UErrors;
+const { URequest } = require("urequest");
 const app = new Rest({ logRequests: true });
 
 app.int((req, res, next) => {
@@ -84,6 +84,7 @@ const runTests = (makeRequest) => {
 		makeRequest({ path })
 			.then(done)
 			.catch(err => {
+				console.log(err)
 				expect(err.statusCode).to.equal(500);
 				done();
 			})
@@ -127,7 +128,7 @@ const runTests = (makeRequest) => {
 			.then(done)
 			.catch(err => {
 				expect(err.statusCode).to.equal(500);
-				expect(err.error.eid).to.be.a("string");
+				expect(err.body.eid).to.be.a("string");
 				done();
 			})
 			.catch(done);
@@ -193,7 +194,7 @@ const runTests = (makeRequest) => {
 			.then(done)
 			.catch(err => {
 				expect(err.statusCode).to.deep.equal(500);
-				expect(err.error.eid).to.be.a("string");
+				expect(err.body.eid).to.be.a("string");
 				done();
 			})
 			.catch(done);
@@ -229,7 +230,7 @@ const runTests = (makeRequest) => {
 				.then(done)
 				.catch(err => {
 					expect(err.statusCode).to.deep.equal(500);
-					expect(err.error.eid).to.be.a("string");
+					expect(err.body.eid).to.be.a("string");
 					done();
 				})
 				.catch(done);
@@ -276,6 +277,7 @@ describe("Integration", () => {
 
 	describe("Native", () => {
 		const port = Math.floor((Math.random() * 9000) + 8500);
+		const u = new URequest();
 
 		const makeRequest = ({ path = "/", body, headers, qs, method } = {}) => {
 			const options = {
@@ -287,7 +289,7 @@ describe("Integration", () => {
 				json: true
 			};
 
-			return request(options);
+			return u.request(options);
 		};
 
 		const server = app.native();
@@ -361,7 +363,7 @@ describe("Integration", () => {
 				.then(result => result.body ? Object.assign(result, { body: JSON.parse(result.body) }) : result)
 				.then(result => {
 					if (result.statusCode === 200) return result.body;
-					else return Promise.reject({ statusCode: result.statusCode, error: result.body });
+					else return Promise.reject({ statusCode: result.statusCode, body: result.body });
 				});
 
 		runTests(makeRequest);

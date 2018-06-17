@@ -16,15 +16,12 @@
   ],
   "author": "Conor Turner",
   "license": "ISC",
-  "dependencies": {},
   "devDependencies": {
     "chai": "^4.1.2",
     "eslint": "^4.19.1",
-    "eslint-config-synacor": "^1.1.2",
     "eslint-config-u": "0.0.4",
-    "mocha": "^3.5.3",
-    "request": "^2.87.0",
-    "request-promise-native": "^1.0.5"
+    "mocha": "^5.2.0",
+    "urequest": "0.0.5"
   },
   "eslintIgnore": [
     "test/*"
