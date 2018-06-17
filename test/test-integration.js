@@ -84,7 +84,6 @@ const runTests = (makeRequest) => {
 		makeRequest({ path })
 			.then(done)
 			.catch(err => {
-				console.log(err)
 				expect(err.statusCode).to.equal(500);
 				done();
 			})
