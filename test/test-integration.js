@@ -67,9 +67,9 @@ const runTests = (makeRequest) => {
 
 	it("res.send buffer", (done) => {
 
-		makeRequest({ path: "/buffer" })
+		makeRequest({ path: "/buffer", json: false })
 			.then(result => {
-				console.log(result)
+				expect(result.toString()).to.equal("testing123");
 				done();
 			})
 			.catch(done);
@@ -293,14 +293,14 @@ describe("Integration", () => {
 		const port = Math.floor((Math.random() * 9000) + 8500);
 		const u = new URequest();
 
-		const makeRequest = ({ path = "/", body, headers, qs, method } = {}) => {
+		const makeRequest = ({ path = "/", body, headers, qs, method, json = true } = {}) => {
 			const options = {
 				uri: `http://localhost:${port}${path}`,
 				headers,
 				body,
 				qs,
 				method,
-				json: true
+				json
 			};
 
 			return u.request(options);
@@ -314,6 +314,15 @@ describe("Integration", () => {
 	});
 
 	describe("Lambda", () => {
+
+		const tryParse = (str) => {
+			try {
+				return JSON.parse(str);
+			}
+			catch (e) {
+				return str;
+			}
+		};
 
 		const getE = ({ httpMethod, path, body, headers, qs }) => ({
 			body,
@@ -374,7 +383,7 @@ describe("Integration", () => {
 		});
 		const makeRequest = ({ path = "/", body, headers, qs, method = "GET" } = {}) =>
 			app.lambda(getE({ httpMethod: method, path, body, headers, qs }))
-				.then(result => result.body ? Object.assign(result, { body: JSON.parse(result.body) }) : result)
+				.then(result => result.body ? Object.assign(result, { body: tryParse(result.body) }) : result)
 				.then(result => {
 					if (result.statusCode === 200) return result.body;
 					else return Promise.reject({ statusCode: result.statusCode, body: result.body });

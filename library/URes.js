@@ -69,6 +69,8 @@ class URes extends EventEmitter {
 	initLambda({ e, callback }) {
 		this[send] = (ret) => {
 
+			if (Buffer.isBuffer(ret)) callback({ statusCode: this.statusCode, body: ret.toString() });
+
 			switch (typeof ret) {
 				case "number": {
 					callback({ statusCode: ret });
@@ -98,7 +100,7 @@ class URes extends EventEmitter {
 				res.writeHead(ret, this.headers);
 				res.end(); // TODO: have it send some json here
 			}
-			else if (ret && ret.prototype && ret.prototype.isPrototypeOf(Buffer)) {
+			else if (Buffer.isBuffer(ret)) {
 				res.writeHead(this.statusCode, this.headers);
 				res.end(ret);
 			}
