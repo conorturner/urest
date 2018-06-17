@@ -1,5 +1,8 @@
 const { expect } = require("chai");
 const Log = require("../library/Log");
+const { UBadGatewayError } = require("../library/UErrors");
+
+// Log.config.pretty = true;
 
 describe("Log", () => {
 
@@ -16,7 +19,7 @@ describe("Log", () => {
 				service: "my-service",
 				environment: "develop",
 				message: "this is a thing"
-			});
+			}) + "\n";
 
 			Object.assign(log, {
 				request_id: "0",
@@ -38,7 +41,7 @@ describe("Log", () => {
 				service: "my-service",
 				environment: "develop",
 				event: "an event"
-			});
+			}) + "\n";
 
 			Object.assign(log, {
 				request_id: "0",
@@ -118,6 +121,29 @@ describe("Log", () => {
 					write: (chunk) => {
 						const obj = JSON.parse(chunk);
 						expect(obj.stack).to.be.a("string");
+						done();
+					}
+				}
+			});
+
+			log.error(data);
+		});
+
+		it("uerror", (done) => {
+
+			const log = new Log({ service: "my-service" });
+			const data = new UBadGatewayError("an error");
+
+			Object.assign(log, {
+				stream: {
+					write: (chunk) => {
+						const obj = JSON.parse(chunk);
+						console.log(obj)
+						expect(obj.request_id).to.be.a("string");
+						expect(obj.stack).to.be.a("string");
+						expect(obj.eid).to.be.a("string");
+						expect(obj.statusCode).to.be.a("number");
+						expect(obj.code).to.be.a("string");
 						done();
 					}
 				}

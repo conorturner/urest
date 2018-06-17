@@ -34,16 +34,20 @@ class Log {
 		if (level > Log.Level.INFO && !(data instanceof Error)) data = this[parseError](data);
 		if (data instanceof Error) data = this[parseError](data);
 
-		return JSON.stringify(Object.assign(base, data, { stack: data.stack }));
+		const outObj = Object.assign(base, data, { stack: data.stack });
+
+		return Log.config.pretty ? JSON.stringify(outObj, null, 2) : JSON.stringify(outObj);
 	}
 
 	[parseError](error) {
 		if (!error.stack) Error.captureStackTrace(error);
-		return { stack: error.stack, message: error.message };
+		const { stack, message, eid, code, statusCode } = error;
+
+		return { stack, message, eid, code, statusCode };
 	}
 
 	[write](string) {
-		this.stream.write(string);
+		this.stream.write(string + "\n");
 	}
 
 	fatal(data) {
@@ -90,6 +94,10 @@ Log.Level = {
 	WARN: 400,
 	ERROR: 500,
 	FATAL: 600
+};
+
+Log.config = {
+	pretty: false
 };
 
 module.exports = Log;
