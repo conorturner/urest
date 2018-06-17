@@ -27,6 +27,10 @@ app.get("/very-broke", (req, res, next) => {
 app.get("/", (req, res) => res.send({}));
 app.get("/query", (req, res) => res.send(req.query));
 app.post("/upost", (req, res) => res.send(req.body));
+app.post("/headers", (req, res) => {
+	res.headers["a-header"] = "value";
+	res.send(200);
+});
 
 app.post("/multi",
 	(req, res, next) => {

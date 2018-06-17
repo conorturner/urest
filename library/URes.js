@@ -13,6 +13,7 @@ class URes extends EventEmitter {
 		this.req = req;
 		this.res = res;
 		this.responseData = undefined;
+		this.headers = {};
 
 		if (res) this.initNative({ req, res });
 		if (callback) this.initLambda({ req, callback });
@@ -94,11 +95,11 @@ class URes extends EventEmitter {
 		this[send] = (ret) => {
 
 			if (typeof ret === "number") {
-				res.writeHead(ret);
+				res.writeHead(ret, this.headers);
 				res.end(); // TODO: have it send some json here
 			}
 			else {
-				res.writeHead(this.statusCode, { "Content-Type": "application/json" });
+				res.writeHead(this.statusCode, Object.assign(this.headers, { "Content-Type": "application/json" }));
 				res.end(JSON.stringify(ret));
 			}
 
