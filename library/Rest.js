@@ -6,8 +6,8 @@ const URes = require("./URes");
 
 const defaultName = process.env.FUNCTION_NAME || process.env.AWS_LAMBDA_FUNCTION_NAME;
 
-const logRequest = Symbol();
-const logResponse = Symbol();
+const logRequest = Symbol("logRequest");
+const logResponse = Symbol("logResponse");
 
 class Rest extends Router {
 	constructor({ name = defaultName, log, logRequests } = {}) {

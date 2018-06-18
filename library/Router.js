@@ -1,5 +1,5 @@
-const addRoute = Symbol();
-const parseRoute = Symbol();
+const addRoute = Symbol("addRoute");
+const parseRoute = Symbol("parseRoute");
 
 class Router {
 

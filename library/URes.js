@@ -1,7 +1,7 @@
 const EventEmitter = require("events");
 const { UInternalServerError } = require("./UErrors");
 
-const send = Symbol();
+const send = Symbol("send");
 
 class URes extends EventEmitter {
 

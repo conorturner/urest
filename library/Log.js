@@ -6,10 +6,10 @@ const {
 
 const crypto = require("crypto");
 
-const parse = Symbol();
-const parseError = Symbol();
-const write = Symbol();
-const log = Symbol();
+const parse = Symbol("parse");
+const parseError = Symbol("parseError");
+const write = Symbol("write");
+const log = Symbol("log");
 
 class Log {
 	constructor({ headers = {}, level, service = SERVICE_NAME } = {}) {
