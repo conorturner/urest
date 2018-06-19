@@ -1,7 +1,7 @@
 # urest
 
 URest is a zero dependency, fully featured, restful routing framework inspired by express and restify.
-The U in the name comes from the unqiue ids URest attaches to logs and errors in your application to assist in easy bug retrieval.
+The U in the name comes from the unqiue ids URest attaches to logs and errors to make it easier to debug your application.
 
 [![npm](https://img.shields.io/npm/dt/urest.svg?style=for-the-badge)](https://www.npmjs.com/package/urest)
 [![Travis](https://img.shields.io/travis/conorturner/urest.svg?style=for-the-badge)](https://travis-ci.org/conorturner/urest)
@@ -58,7 +58,7 @@ app.get("/broken", (req, res, next) => next(new UInternalServerError("This is lo
     "request_id":"1a376e5eb266511a35aefcc7ffad7d50aef5df40",
     "environment":"develop",
     "service": "my-service",
-    "stack":"Error: Error: Very broken\n    at Object.UError (urest/library/UErrors.js:7:8)\n    at new <anonymous> (urest/library/UErrors.js:11:9)\n    at runHandler (urest/library/Rest.js:79:22)\n    at next (urest/library/Rest.js:87:4)\n    at IncomingMessage.req.on.on (urest/library/JsonBodyParser.js:26:6)\n    at emitNone (events.js:106:13)\n    at IncomingMessage.emit (events.js:208:7)\n    at endReadableNT (_stream_readable.js:1056:12)\n    at _combinedTickCallback (internal/process/next_tick.js:138:11)\n    at process._tickCallback (internal/process/next_tick.js:180:9)",
+    "stack":"UInternalServerError: This is logged\n    at Object.UError (urest/library/UErrors.js:7:8)\n    at new <anonymous> (urest/library/UErrors.js:11:9)\n    at runHandler (urest/library/Rest.js:79:22)\n    at next (urest/library/Rest.js:87:4)\n    at IncomingMessage.req.on.on (urest/library/JsonBodyParser.js:26:6)\n    at emitNone (events.js:106:13)\n    at IncomingMessage.emit (events.js:208:7)\n    at endReadableNT (_stream_readable.js:1056:12)\n    at _combinedTickCallback (internal/process/next_tick.js:138:11)\n    at process._tickCallback (internal/process/next_tick.js:180:9)",
     "message":{
 
     },
@@ -70,7 +70,6 @@ app.get("/broken", (req, res, next) => next(new UInternalServerError("This is lo
 
 ## Interceptors
 Interceptors works in much the same way as middleware but act on the response before it is returned to the client.
-The value passed into res.send is attached as res.responseData, the following example check for a property in the response and prevents the request if not true.
 
 #### GZIP Interceptor
 
@@ -87,9 +86,17 @@ app.post("/echo", (req, res) => res.send(req.body));
 const server = app.native().listen(1234);
 ```
 
+#### Custom Interceptors
 
+The value passed into res.send is attached as `res.responseData`, the following example checks for a property in the response and prevents the request if not true.
 
+```javascript
+const { Rest, UErrors } = require("urest");
+const { UUnauthorizedError } = UErrors;
 
-
-
-
+const app = new Rest();
+app.int((req, res, next) => {
+   if (res.responseData.authed !== true) next(new UUnauthorizedError());
+   else next();
+});
+```
