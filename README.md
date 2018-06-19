@@ -17,7 +17,7 @@ $ npm install urest
 const { Rest, JsonBodyParser } = require("urest");
 const app = new Rest();
 
-app.pre(JsonBodyParser.middleware);
+app.pre(JsonBodyParser.middleware());
 app.get('/', (req, res) => res.send({message: 'Hello World'}));
 app.post("/echo", (req, res) => res.send(req.body));
 ```
@@ -27,7 +27,7 @@ app.native().listen(8000);
 ```
 #### AWS Lambda
 ```javascript
-return app.lambda(e, context);
+exports.handle = (e, context) => app.lambda(e, context);
 ```
 #### Google Cloud Functions
 ```javascript
@@ -71,14 +71,23 @@ app.get("/broken", (req, res, next) => next(new UInternalServerError("This is lo
 ## Interceptors
 Interceptors works in much the same way as middleware but act on the response before it is returned to the client.
 The value passed into res.send is attached as res.responseData, the following example check for a property in the response and prevents the request if not true.
-```javascript
-const { UUnauthorizedError } = UErrors;
 
-app.int((req, res, next) => {
-	if (res.responseData.authed !== true) next(new UUnauthorizedError());
-	else next();
-});
+#### GZIP Interceptor
+
+The following example will check for the header `"accept-encoding": "gzip"` and will compress response bodies as fit.
+
+```javascript
+const { Rest, JsonBodyParser } = require("urest");
+const { Neutron } = require("urequest");
+
+const app = new Rest();
+app.pre(JsonBodyParser.middleware());
+app.int(Neutron.intercept());
+app.post("/echo", (req, res) => res.send(req.body));
+const server = app.native().listen(1234);
 ```
+
+
 
 
 
