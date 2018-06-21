@@ -1,10 +1,11 @@
 const Router = require("./Router");
-const { UInternalServerError } = require("./UErrors");
 const Log = require("./Log");
 const UReq = require("./UReq");
 const URes = require("./URes/URes");
 const UResLambda = require("./URes/UResLambda");
 const UResNative = require("./URes/UResNative");
+const UResGCF = require("./URes/UResGCF");
+const { UInternalServerError } = require("./UErrors");
 
 const defaultName = process.env.FUNCTION_NAME || process.env.AWS_LAMBDA_FUNCTION_NAME;
 
@@ -92,7 +93,15 @@ class Rest extends Router {
 	}
 
 	gcf() {
-		return { urest: (req, res) => this.query(req, res, new Log({ headers: req.headers })) };
+		return {
+			urest: (req, res) => {
+				const log = new Log({ headers: req.headers });
+				const ureq = new UReq({ req, res });
+				const ures = new UResGCF({ req, res, log });
+
+				this.query(ureq, ures, new Log({ headers: req.headers }));
+			}
+		};
 	}
 
 	lambda(e) {
@@ -107,6 +116,7 @@ class Rest extends Router {
 
 	native() {
 		const http = require("http");
+
 		const server = http.createServer((req, res) => {
 			const log = new Log({ headers: req.headers });
 			const ureq = new UReq({ req, res });

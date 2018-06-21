@@ -393,4 +393,46 @@ describe("Integration", () => {
 
 	});
 
+	describe("Google Cloud Functions", () => {
+
+
+		const makeRequest = ({ path = "/", body, headers, qs, method = "GET" } = {}) => {
+
+			return new Promise((resolve, reject) => {
+				try {
+					const mockReq = {
+						headers,
+						body,
+						query: qs,
+						method,
+						url: path
+					};
+
+					const mockRes = {
+						headers: {},
+						set: (k, v) => mockRes.headers[k] = v,
+						status: (code) => {
+							mockRes.statusCode = code;
+							return mockRes;
+						},
+						send: (result) => {
+							const body = Buffer.isBuffer(result) ? result.toString() : result;
+							if (mockRes.statusCode === 200) resolve(body);
+							else reject({ statusCode: mockRes.statusCode, body });
+						}
+					};
+
+
+					app.gcf().urest(mockReq, mockRes);
+				}
+				catch (e) {
+					reject(e);
+				}
+			});
+		};
+
+		runTests(makeRequest);
+
+	});
+
 });

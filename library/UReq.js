@@ -2,13 +2,14 @@ const url = require("url");
 const querystring = require("querystring");
 
 class UReq {
-	static native(req, log) {
+	static native(req, log) { // this is actually native and gcloud
 		req.log = log;
 		if (req.on) req.on("error", (err) => log.error(err));
 		const parsed = url.parse(req.url);
 
+		req.headers = req.headers || {};
 		req.path = parsed.pathname;
-		req.query = querystring.parse(parsed.query);
+		req.query = typeof req.query === "object" ? req.query : querystring.parse(parsed.query);
 
 		return req;
 	}
