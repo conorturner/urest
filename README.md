@@ -59,9 +59,7 @@ app.get("/broken", (req, res, next) => next(new UInternalServerError("This is lo
     "environment":"develop",
     "service": "my-service",
     "stack":"UInternalServerError: This is logged\n    at Object.UError (urest/library/UErrors.js:7:8)\n    at new <anonymous> (urest/library/UErrors.js:11:9)\n    at runHandler (urest/library/Rest.js:79:22)\n    at next (urest/library/Rest.js:87:4)\n    at IncomingMessage.req.on.on (urest/library/JsonBodyParser.js:26:6)\n    at emitNone (events.js:106:13)\n    at IncomingMessage.emit (events.js:208:7)\n    at endReadableNT (_stream_readable.js:1056:12)\n    at _combinedTickCallback (internal/process/next_tick.js:138:11)\n    at process._tickCallback (internal/process/next_tick.js:180:9)",
-    "message":{
-
-    },
+    "message":"This is logged",
     "eid":"3ccf6fadf79875f58631a8c7ecc302523b563423",
     "code":"InternalServer",
     "statusCode":500
@@ -78,10 +76,11 @@ The following example will check for the header `"accept-encoding": "gzip"` and 
 ```javascript
 const { Rest, JsonBodyParser } = require("urest");
 const { Neutron } = require("urequest");
-
 const app = new Rest();
-app.pre(JsonBodyParser.middleware());
+
 app.int(Neutron.intercept());
+
+app.pre(JsonBodyParser.middleware());
 app.post("/echo", (req, res) => res.send(req.body));
 const server = app.native().listen(1234);
 ```
