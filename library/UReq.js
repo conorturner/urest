@@ -8,7 +8,7 @@ class UReq {
 		const parsed = url.parse(req.url);
 
 		req.headers = req.headers || {};
-		req.path = parsed.pathname;
+		req.path = req.path || parsed.pathname;
 		req.query = typeof req.query === "object" ? req.query : querystring.parse(parsed.query);
 
 		return req;
