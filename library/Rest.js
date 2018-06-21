@@ -2,7 +2,9 @@ const Router = require("./Router");
 const { UInternalServerError } = require("./UErrors");
 const Log = require("./Log");
 const UReq = require("./UReq");
-const URes = require("./URes");
+const URes = require("./URes/URes");
+const UResLambda = require("./URes/UResLambda");
+const UResNative = require("./URes/UResNative");
 
 const defaultName = process.env.FUNCTION_NAME || process.env.AWS_LAMBDA_FUNCTION_NAME;
 
@@ -24,14 +26,13 @@ class Rest extends Router {
 	[logResponse](req, res) {
 		//TODO: some clever stuff to handle other body types than json here
 		const diff = process.hrtime(res.zeroTime);
-		const duration = (diff[0] * 1e9 + diff[1])/1e6;
-
+		const duration = (diff[0] * 1e9 + diff[1]) / 1e6;
 		req.log.info({ event: "Response", status: res.statusCode, body: res.body, duration });
 	}
 
-	query(req, res) {
+	query(req, res, log) {
 		if (this.log) req.log = this.log;
-		else req.log = new Log({ headers: req.headers });
+		else req.log = log;
 
 		if (this.logRequests) {
 			this[logRequest](req);
@@ -91,21 +92,29 @@ class Rest extends Router {
 	}
 
 	gcf() {
-		return { urest: (req, res) => this.query(req, res) };
+		return { urest: (req, res) => this.query(req, res, new Log({ headers: req.headers })) };
 	}
 
 	lambda(e) {
 		return new Promise(callback => {
-			const req = new UReq({ e });
-			const res = new URes({ e, callback, req });
+			const log = new Log({ headers: e.headers });
+			const req = new UReq({ e, log });
+			const res = new UResLambda({ e, callback, log, req });
 
-			this.query(req, res);
+			this.query(req, res, new Log({ headers: req.headers }));
 		});
 	}
 
 	native() {
 		const http = require("http");
-		const server = http.createServer((req, res) => this.query(new UReq({ req, res }), new URes({ req, res })));
+		const server = http.createServer((req, res) => {
+			const log = new Log({ headers: req.headers });
+			const ureq = new UReq({ req, res });
+			const ures = new UResNative({ req, res, log });
+
+			this.query(ureq, ures, log);
+		});
+
 		server.on("clientError", (err, socket) => socket.end("HTTP/1.1 400 Bad Request\r\n\r\n"));
 		return server;
 	}

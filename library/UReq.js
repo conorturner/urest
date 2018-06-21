@@ -2,8 +2,9 @@ const url = require("url");
 const querystring = require("querystring");
 
 class UReq {
-	static native(req) {
-		if (req.on) req.on("error", (err) => req.log.error(err));
+	static native(req, log) {
+		req.log = log;
+		if (req.on) req.on("error", (err) => log.error(err));
 		const parsed = url.parse(req.url);
 
 		req.path = parsed.pathname;
@@ -12,9 +13,9 @@ class UReq {
 		return req;
 	}
 
-	static lambda(e, self) {
+	static lambda(e, self, log) {
+		self.log = log;
 		const { headers, path, httpMethod, body, queryStringParameters } = e;
-
 		Object.assign(self, {
 			headers,
 			path,
@@ -24,9 +25,9 @@ class UReq {
 		});
 	}
 
-	constructor({ e, req }) {
-		if (e) UReq.lambda(e, this);
-		if (req) return UReq.native(req);
+	constructor({ e, req, log }) {
+		if (e) UReq.lambda(e, this, log);
+		if (req) return UReq.native(req, log);
 	}
 
 

@@ -1,27 +1,21 @@
 const EventEmitter = require("events");
-const { UInternalServerError } = require("./UErrors");
+const { UInternalServerError } = require("../UErrors");
 
-const send = Symbol("send");
+const send = Symbol.for("send");
 
 class URes extends EventEmitter {
 
-	constructor({ req, res, callback }) {
+	constructor() {
 		super();
 		this.zeroTime = process.hrtime();
 		this.statusCode = 200;
 		this.hasRunIntercept = false;
-		this.req = req;
-		this.res = res;
 		this.responseData = undefined;
 		this.headers = {};
-
-		if (res) this.initNative({ req, res });
-		if (callback) this.initLambda({ req, callback });
 	}
 
 	static returnError(err, req, res) {
-
-		req.log.error(err);
+		res.log.error(err);
 
 		const body = {
 			code: err.code,
@@ -66,56 +60,12 @@ class URes extends EventEmitter {
 		return true; // tell caller we had something to run
 	}
 
-	initLambda({ e, callback }) {
-		this[send] = (ret) => {
-
-			if (Buffer.isBuffer(ret)) callback({ statusCode: this.statusCode, body: ret.toString() });
-
-			switch (typeof ret) {
-				case "number": {
-					callback({ statusCode: ret });
-					break;
-				}
-				case "string": {
-					callback({ statusCode: this.statusCode, body: JSON.stringify({ message: ret }) });
-					break;
-				}
-				case "object": {
-					callback({ statusCode: this.statusCode, body: JSON.stringify(ret) });
-					break;
-				}
-				default: {
-					callback({ statusCode: this.statusCode });
-					break;
-				}
-			}
-
-		};
-	}
-
-	initNative({ req, res }) {
-		this[send] = (ret) => {
-
-			if (typeof ret === "number") {
-				res.writeHead(ret, this.headers);
-				res.end(); // TODO: have it send some json here
-			}
-			else if (Buffer.isBuffer(ret)) {
-				res.writeHead(this.statusCode, this.headers);
-				res.end(ret);
-			}
-			else {
-				res.writeHead(this.statusCode, Object.assign(this.headers, { "Content-Type": "application/json" }));
-				res.end(JSON.stringify(ret));
-			}
-		};
-	}
-
 	send(...args) {
 		if (typeof args[0] === "number") {
 			this.statusCode = args[0];
 			args[0] = args[1];
 		}
+
 
 		const [data] = args;
 		this.responseData = data;
