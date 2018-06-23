@@ -12,12 +12,12 @@ class UResGCF extends URes {
 		this.log = log;
 		this[send] = (ret) => {
 			Object.keys(this.headers).forEach(key => res.set(key, this.headers[key]));
-			if (typeof ret === "number") res.status(ret).send(); // TODO: have it send some json here
-			else if (Buffer.isBuffer(ret)) res.status(this.statusCode).send(ret);
-			else {
+			if (typeof ret === "string" || Buffer.isBuffer(ret)) res.status(this.statusCode).send(ret);
+			else if (typeof ret === "object") {
 				res.set("Content-Type", "application/json");
 				res.status(this.statusCode).send(ret);
 			}
+			else res.status(this.statusCode).send();
 		};
 	}
 

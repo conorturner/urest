@@ -11,23 +11,23 @@ class UResLambda extends URes {
 		this.log = log;
 		this.req = req;
 		this[send] = (ret) => {
-			if (Buffer.isBuffer(ret)) callback({ statusCode: this.statusCode, body: ret.toString() });
+			if (Buffer.isBuffer(ret)) callback({
+				statusCode: this.statusCode,
+				body: ret.toString(),
+				headers: this.headers
+			});
 
 			switch (typeof ret) {
-				case "number": {
-					callback({ statusCode: ret });
-					break;
-				}
 				case "string": {
-					callback({ statusCode: this.statusCode, body: JSON.stringify({ message: ret }) });
+					callback({ statusCode: this.statusCode, body: ret, headers: this.headers });
 					break;
 				}
 				case "object": {
-					callback({ statusCode: this.statusCode, body: JSON.stringify(ret) });
+					callback({ statusCode: this.statusCode, body: JSON.stringify(ret), headers: this.headers });
 					break;
 				}
 				default: {
-					callback({ statusCode: this.statusCode });
+					callback({ statusCode: this.statusCode, headers: this.headers });
 					break;
 				}
 			}

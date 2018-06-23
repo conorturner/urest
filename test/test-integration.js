@@ -20,7 +20,13 @@ app.int((req, res, next) => {
 app.pre(JsonBodyParser.middleware());
 app.get("/broke", (req, res) => res.status(500).send({ error: "oh no" }));
 app.get("/broke2", (req, res) => res.sendStatus(500));
+app.get("/broke3", (req, res) => res.send(500));
+app.get("/echo-header", (req, res) => {
+	res.headers = req.headers;
+	res.send(500);
+});
 app.get("/buffer", (req, res) => res.send(new Buffer("testing123")));
+app.get("/string", (req, res) => res.send("testing123"));
 app.get("/ubroke", (req, res, next) => next(new UInternalServerError(":(")));
 app.get("/very-broke", (req, res, next) => {
 	throw new Error("Very broken");
@@ -28,6 +34,7 @@ app.get("/very-broke", (req, res, next) => {
 app.get("/", (req, res) => res.send({}));
 app.get("/query", (req, res) => res.send(req.query));
 app.post("/upost", (req, res) => res.send(req.body));
+app.get("/param/:param/details", (req, res) => res.send(req.params));
 app.post("/headers", (req, res) => {
 	res.headers["a-header"] = "value";
 	res.send(200);
@@ -57,9 +64,10 @@ app.use("/b", bRouter);
 const runTests = (makeRequest) => {
 
 	it("res.send", (done) => {
-
+		app.logRequests = true;
 		makeRequest({ path: "/" })
 			.then(result => {
+				app.logRequests = false; // keeps rest of tests quiet
 				done();
 			})
 			.catch(done);
@@ -70,6 +78,27 @@ const runTests = (makeRequest) => {
 		makeRequest({ path: "/buffer", json: false })
 			.then(result => {
 				expect(result.toString()).to.equal("testing123");
+				done();
+			})
+			.catch(done);
+	});
+
+	it("res.send string", (done) => {
+
+		makeRequest({ path: "/string", json: false })
+			.then(result => {
+				expect(result).to.equal("testing123");
+				done();
+			})
+			.catch(done);
+	});
+
+	it("res.send status code", (done) => {
+
+		makeRequest({ path: "/broke3", json: false })
+			.then(done)
+			.catch(err => {
+				expect(err.statusCode).to.equal(500);
 				done();
 			})
 			.catch(done);
@@ -86,6 +115,33 @@ const runTests = (makeRequest) => {
 		makeRequest({ path, qs })
 			.then(result => {
 				expect(result).to.deep.equal(qs);
+				done();
+			})
+			.catch(done);
+
+	});
+
+	it("req.params", (done) => {
+
+		const path = "/param/1/details";
+
+		makeRequest({ path })
+			.then(result => {
+				expect(result).to.deep.equal({ param: "1" });
+				done();
+			})
+			.catch(done);
+
+	});
+
+	it("headers", (done) => {
+
+		const path = "/echo-headers";
+
+		makeRequest({ path, headers: { test: "a" } })
+			.then(done)
+			.catch(err => {
+				expect(err.statusCode).to.equal(500);
 				done();
 			})
 			.catch(done);
@@ -385,7 +441,7 @@ describe("Integration", () => {
 			app.lambda(getE({ httpMethod: method, path, body, headers, qs }))
 				.then(result => result.body ? Object.assign(result, { body: tryParse(result.body) }) : result)
 				.then(result => {
-					if (result.statusCode === 200) return result.body;
+					if (result.statusCode < 400) return result.body;
 					else return Promise.reject({ statusCode: result.statusCode, body: result.body });
 				});
 
@@ -396,40 +452,37 @@ describe("Integration", () => {
 	describe("Google Cloud Functions", () => {
 
 
-		const makeRequest = ({ path = "/", body, headers, qs, method = "GET" } = {}) => {
+		const makeRequest = ({ path = "/", body, headers, qs, method = "GET" } = {}) => new Promise((resolve, reject) => {
+			try {
+				const mockReq = {
+					headers,
+					body,
+					query: qs,
+					method,
+					url: path
+				};
 
-			return new Promise((resolve, reject) => {
-				try {
-					const mockReq = {
-						headers,
-						body,
-						query: qs,
-						method,
-						url: path
-					};
-
-					const mockRes = {
-						headers: {},
-						set: (k, v) => mockRes.headers[k] = v,
-						status: (code) => {
-							mockRes.statusCode = code;
-							return mockRes;
-						},
-						send: (result) => {
-							const body = Buffer.isBuffer(result) ? result.toString() : result;
-							if (mockRes.statusCode === 200) resolve(body);
-							else reject({ statusCode: mockRes.statusCode, body });
-						}
-					};
+				const mockRes = {
+					headers: {},
+					set: (k, v) => mockRes.headers[k] = v,
+					status: (code) => {
+						mockRes.statusCode = code;
+						return mockRes;
+					},
+					send: (result) => {
+						const body = Buffer.isBuffer(result) ? result.toString() : result;
+						if (mockRes.statusCode === 200) resolve(body);
+						else reject({ statusCode: mockRes.statusCode, body, headers: mockRes.headers });
+					}
+				};
 
 
-					app.gcf().urest(mockReq, mockRes);
-				}
-				catch (e) {
-					reject(e);
-				}
-			});
-		};
+				app.gcf().urest(mockReq, mockRes);
+			}
+			catch (e) {
+				reject(e);
+			}
+		});
 
 		runTests(makeRequest);
 

@@ -12,11 +12,7 @@ class UResNative extends URes {
 		this.log = log;
 		this[send] = (ret) => {
 
-			if (typeof ret === "number") {
-				res.writeHead(ret, this.headers);
-				res.end(); // TODO: have it send some json here
-			}
-			else if (Buffer.isBuffer(ret)) {
+			if (typeof ret === "string" || Buffer.isBuffer(ret)) {
 				res.writeHead(this.statusCode, this.headers);
 				res.end(ret);
 			}
