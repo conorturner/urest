@@ -15,3 +15,5 @@ before_install:
 script:
   - "npm run lint"
   - "npm test"
+after_success:
+  - npm run coveralls
