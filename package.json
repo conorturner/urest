@@ -1,7 +1,7 @@
 {
   "name": "urest",
-  "version": "3.4.4",
-  "description": "The rest frame work from the future..",
+  "version": "4.0.0",
+  "description": "The rest frame work from the future.",
   "main": "index.js",
   "scripts": {
     "test": "mocha test --recursive",
