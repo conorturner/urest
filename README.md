@@ -6,6 +6,7 @@ The U in the name comes from the unqiue ids URest attaches to logs and errors to
 [![npm](https://img.shields.io/npm/dt/urest.svg?style=for-the-badge)](https://www.npmjs.com/package/urest)
 [![Travis](https://img.shields.io/travis/conorturner/urest.svg?style=for-the-badge)](https://travis-ci.org/conorturner/urest)
 [![Coveralls github](https://img.shields.io/coveralls/github/conorturner/urest.svg?style=for-the-badge)](https://coveralls.io/github/conorturner/urest)
+![npm bundle size (minified)](https://img.shields.io/bundlephobia/min/urest.svg?style=for-the-badge)
 
 
 ## Install

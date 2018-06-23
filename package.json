@@ -6,7 +6,7 @@
   "scripts": {
     "test": "mocha test --recursive",
     "cover": "nyc --reporter=text-lcov npm test",
-    "coveralls": "nyc report --reporter=text-lcov | coveralls",
+    "coveralls": "npm run cover && nyc report --reporter=text-lcov | coveralls",
     "lint": "eslint ."
   },
   "keywords": [
@@ -23,9 +23,7 @@
     "coveralls": "^3.0.1",
     "eslint": "^4.19.1",
     "eslint-config-u": "0.0.4",
-    "istanbul": "^0.4.5",
     "mocha": "^5.2.0",
-    "mocha-lcov-reporter": "^1.3.0",
     "nyc": "^12.0.2",
     "urequest": "0.0.5"
   },
