@@ -25,6 +25,8 @@ app.get("/echo-header", (req, res) => {
 	res.headers = req.headers;
 	res.send(500);
 });
+app.put("/put",(req,res) => res.send(200));
+app.delete("/delete",(req,res) => res.send(200));
 app.get("/buffer", (req, res) => res.send(new Buffer("testing123")));
 app.get("/string", (req, res) => res.send("testing123"));
 app.get("/ubroke", (req, res, next) => next(new UInternalServerError(":(")));
