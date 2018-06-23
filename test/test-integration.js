@@ -136,11 +136,12 @@ const runTests = (makeRequest) => {
 
 	it("headers", (done) => {
 
-		const path = "/echo-headers";
+		const path = "/echo-header";
 
 		makeRequest({ path, headers: { test: "a" } })
 			.then(done)
 			.catch(err => {
+				expect(err.headers.test).to.equal("a");
 				expect(err.statusCode).to.equal(500);
 				done();
 			})
@@ -442,7 +443,7 @@ describe("Integration", () => {
 				.then(result => result.body ? Object.assign(result, { body: tryParse(result.body) }) : result)
 				.then(result => {
 					if (result.statusCode < 400) return result.body;
-					else return Promise.reject({ statusCode: result.statusCode, body: result.body });
+					else return Promise.reject({ statusCode: result.statusCode, body: result.body, headers: result.headers });
 				});
 
 		runTests(makeRequest);

@@ -42,7 +42,7 @@ class Rest extends Router {
 
 		const reqUrl = req.url;
 		const { method: reqMethod, path: reqPath = reqUrl } = req;
-console.log(reqPath)
+
 		const matched = this.routes
 			.filter(({ method }) => method === reqMethod.toLowerCase())
 			.map(route => Object.assign(route, { match: route.regex.exec(reqPath) }))
