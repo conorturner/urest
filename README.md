@@ -1,6 +1,6 @@
 # urest
 
-URest is a zero dependency, fully featured, restful routing framework inspired by express and restify.
+URest is a zero dependency restful routing framework inspired by express and restify.
 The U in the name comes from the unqiue ids URest attaches to logs and errors to make it easier to debug your application.
 
 [![npm](https://img.shields.io/npm/dt/urest.svg?style=for-the-badge)](https://www.npmjs.com/package/urest)
@@ -8,11 +8,7 @@ The U in the name comes from the unqiue ids URest attaches to logs and errors to
 [![Coveralls github](https://img.shields.io/coveralls/github/conorturner/urest.svg?style=for-the-badge)](https://coveralls.io/github/conorturner/urest)
 ![license](https://img.shields.io/github/license/conorturner/urest.svg?style=for-the-badge)
 
-
-
-
 ## Install
-
 ```bash
 $ npm install urest
 ```
