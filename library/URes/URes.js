@@ -66,7 +66,6 @@ class URes extends EventEmitter {
 			args[0] = args[1];
 		}
 
-
 		const [data] = args;
 		this.responseData = data;
 
