@@ -11,6 +11,7 @@ const defaultName = process.env.FUNCTION_NAME || process.env.AWS_LAMBDA_FUNCTION
 
 const logRequest = Symbol("logRequest");
 const logResponse = Symbol("logResponse");
+const handleCors = Symbol("handleCors");
 
 class Rest extends Router {
 	constructor({ name = defaultName, log, logRequests } = {}) {
@@ -31,6 +32,12 @@ class Rest extends Router {
 		req.log.info({ event: "Response", status: res.statusCode, body: res.body, duration });
 	}
 
+	[handleCors](req, res) {
+		const origin = req.headers.origin;
+		if(this.corsConfig.includes(origin)) res.send(204);
+		else res.send(404);
+	}
+
 	query(req, res, log) {
 		if (this.log) req.log = this.log;
 		else req.log = log;
@@ -48,7 +55,10 @@ class Rest extends Router {
 			.map(route => Object.assign(route, { match: route.regex.exec(reqPath) }))
 			.filter(({ match }) => match !== null)[0];
 
-		if (!matched) return res.status(404).send(); //TODO: make this customizable
+		if (!matched) {
+			if (reqMethod === "options" && this.corsConfig) return this[handleCors](req, res);
+			return res.status(404).send(); //TODO: make this customizable
+		}
 
 		const handlers = this.middleware.concat(matched.handlers);
 		const intercept = this.intercept.concat(matched.intercept);
@@ -90,6 +100,10 @@ class Rest extends Router {
 		};
 
 		runHandler(next, i);
+	}
+
+	cors(corsConfig) {
+		this.corsConfig = corsConfig;
 	}
 
 	gcf() {
