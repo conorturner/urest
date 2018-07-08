@@ -34,7 +34,10 @@ class Rest extends Router {
 
 	[handleCors](req, res) {
 		const origin = req.headers.origin;
-		if(this.corsConfig.includes(origin)) res.send(204);
+		if (this.corsConfig.includes(origin)) {
+			res.headers["Access-Control-Allow-Origin"] = "*";
+			res.send(204);
+		}
 		else res.send(404);
 	}
 
@@ -56,7 +59,7 @@ class Rest extends Router {
 			.filter(({ match }) => match !== null)[0];
 
 		if (!matched) {
-			if (reqMethod === "options" && this.corsConfig) return this[handleCors](req, res);
+			if (reqMethod.toLowerCase() === "options" && this.corsConfig) return this[handleCors](req, res);
 			return res.status(404).send(); //TODO: make this customizable
 		}
 
