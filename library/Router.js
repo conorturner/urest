@@ -1,5 +1,4 @@
-const fs = require("fs");
-const pathLib = require("path");
+const Static = require("./Static");
 
 const addRoute = Symbol("addRoute");
 const parseRoute = Symbol("parseRoute");
@@ -72,19 +71,26 @@ class Router {
 	}
 
 	serve(path, localPath, options = {}) {
-		const { notFound, index } = options;
+		const dir = new Static({ localPath, options });
+		const handler = (req, res) => {
+			const pathExt = req.params["*"] ? req.params["*"][0] : "/";
 
-		this[addRoute]("get", pathLib.join(path, "/:pathFilename"), (req, res) => {
-			const { pathFilename } = req.params;
-			const resultantPath = pathLib.join(localPath, pathFilename);
+			dir.get(pathExt)
+				.then(({ buffer, headers, status }) => {
+					if (buffer) {
+						Object.assign(res.headers, headers);
+						res.status(status).send(buffer);
+					}
+					else res.status(status).send();
+				})
+				.catch((err) => {
+					console.error(err);
+					res.status(500).send();
+				});
+		};
 
-			fs.lstat(resultantPath, (err, stats) => {
-				if (err) return console.log(err); //Handle error
-
-				console.log(`Is file: ${stats.isFile()}`);
-				console.log(`Is directory: ${stats.isDirectory()}`);
-			});
-		});
+		this.get(path, handler);
+		this.get(Static.joinPath(path, "/*"), handler);
 	}
 
 	[addRoute](method, args) {
@@ -108,7 +114,7 @@ class Router {
 
 		const regexTokens = tokens.map(token => {
 			if (typeof token === "string") return token;
-			else if (token.wildcard) return "(.+)";
+			else if (token.wildcard) return "(.+)"; // wildcards allow / within the path segment e.g. /test/*/123 will match /test/1/2/123
 			else return "([^\\/]+)";
 		});
 

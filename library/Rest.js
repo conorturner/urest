@@ -72,7 +72,6 @@ class Rest extends Router {
 	}
 
 	getParams(match, tokens) {
-		// TODO: add wildcard support here
 		return tokens
 			.filter(token => typeof token === "object")
 			.map(({ param }) => param)
