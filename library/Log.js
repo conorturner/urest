@@ -13,10 +13,7 @@ const log = Symbol("log");
 
 class Log {
 	constructor({ headers = {}, level, service = SERVICE_NAME } = {}) {
-		this.city = headers["x-appengine-city"];
-		this.country = headers["x-appengine-country"] || headers["CloudFront-Viewer-Country"];
 		this.request_id = crypto.randomBytes(20).toString("hex");
-		this.user_ip = headers["x-appengine-user-ip"];
 		this.stream = process.stdout;
 		this.level = level;
 		this.service = service;

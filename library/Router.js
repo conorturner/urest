@@ -1,3 +1,6 @@
+const fs = require("fs");
+const pathLib = require("path");
+
 const addRoute = Symbol("addRoute");
 const parseRoute = Symbol("parseRoute");
 
@@ -68,6 +71,22 @@ class Router {
 		return proxyRouter;
 	}
 
+	serve(path, localPath, options = {}) {
+		const { notFound, index } = options;
+
+		this[addRoute]("get", pathLib.join(path, "/:pathFilename"), (req, res) => {
+			const { pathFilename } = req.params;
+			const resultantPath = pathLib.join(localPath, pathFilename);
+
+			fs.lstat(resultantPath, (err, stats) => {
+				if (err) return console.log(err); //Handle error
+
+				console.log(`Is file: ${stats.isFile()}`);
+				console.log(`Is directory: ${stats.isDirectory()}`);
+			});
+		});
+	}
+
 	[addRoute](method, args) {
 		if (typeof args[0] !== "string") throw new Error("first arg must be string");
 		const [path, ...handlers] = args;
@@ -81,11 +100,21 @@ class Router {
 		const tokens = path
 			.split("/")
 			.filter(token => token !== "")
-			.map(token => token.startsWith(":") ? { param: token.substr(1) } : token);
+			.map(token => {
+				if (token.startsWith(":")) return { param: token.substr(1) }; // a defined param
+				else if (token === "*") return { wildcard: true, param: "*" }; // match anything
+				else return token;
+			});
 
+		const regexTokens = tokens.map(token => {
+			if (typeof token === "string") return token;
+			else if (token.wildcard) return "(.+)";
+			else return "([^\\/]+)";
+		});
 
-		const regexString = "^\\/" + tokens.map(token => typeof token === "object" ? "([^\\/]+)" : token).join("\\/");
-		const regex = new RegExp(regexString + "$");
+		const regexString = "^\\/" + regexTokens.join("\\/");
+		const endDelimiter = tokens.length > 0 && tokens[tokens.length - 1].wildcard ? "" : "$"; // if last token is wildcard do not end delimit.
+		const regex = new RegExp(regexString + endDelimiter);
 
 		return { regex, tokens };
 	}

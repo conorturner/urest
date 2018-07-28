@@ -25,8 +25,8 @@ app.get("/echo-header", (req, res) => {
 	res.headers = req.headers;
 	res.send(500);
 });
-app.put("/put",(req,res) => res.send(200));
-app.delete("/delete",(req,res) => res.send(200));
+app.put("/put", (req, res) => res.send(200));
+app.delete("/delete", (req, res) => res.send(200));
 app.get("/buffer", (req, res) => res.send(new Buffer("testing123")));
 app.get("/string", (req, res) => res.send("testing123"));
 app.get("/ubroke", (req, res, next) => next(new UInternalServerError(":(")));
@@ -41,6 +41,9 @@ app.post("/headers", (req, res) => {
 	res.headers["a-header"] = "value";
 	res.send(200);
 });
+app.get("/wildcard/*", (req, res) => res.send(req.params));
+app.get("/wildcard-mid/*/mid", (req, res) => res.send({ success: true }));
+
 
 app.post("/multi",
 	(req, res, next) => {
@@ -290,6 +293,42 @@ const runTests = (makeRequest) => {
 
 	});
 
+	describe("Wildcard", () => {
+
+		it.only("end of path", (done) => {
+
+			const method = "GET";
+
+			Promise.all([
+				makeRequest({ method, path: "/wildcard/a" }),
+				makeRequest({ method, path: "/wildcard/sroubriubfvi/123" })
+			])
+				.then(result => {
+					expect(result).to.deep.equal([{ "*": ["a"] }, { "*": ["sroubriubfvi/123"] }]);
+					done();
+				})
+				.catch(done);
+
+		});
+
+		it("middle of path", (done) => {
+
+			const method = "GET";
+
+			Promise.all([
+				makeRequest({ method, path: "/wildcard-mid/a/mid" }),
+				makeRequest({ method, path: "/wildcard-mid/sroubriubfvi/mid" })
+			])
+				.then(result => {
+					expect(result).to.deep.equal([{ success: true }, { success: true }]);
+					done();
+				})
+				.catch(done);
+
+		});
+
+	});
+
 	describe("intercept", () => {
 
 		it("error in intercept", (done) => {
@@ -445,7 +484,11 @@ describe("Integration", () => {
 				.then(result => result.body ? Object.assign(result, { body: tryParse(result.body) }) : result)
 				.then(result => {
 					if (result.statusCode < 400) return result.body;
-					else return Promise.reject({ statusCode: result.statusCode, body: result.body, headers: result.headers });
+					else return Promise.reject({
+						statusCode: result.statusCode,
+						body: result.body,
+						headers: result.headers
+					});
 				});
 
 		runTests(makeRequest);

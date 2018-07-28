@@ -32,7 +32,7 @@ class Rest extends Router {
 		req.log.info({ event: "Response", status: res.statusCode, body: res.body, duration });
 	}
 
-	[handleCors](req, res) {
+	[handleCors](req, res) { // TODO: have this handle the res.send and return true if handled
 		const origin = req.headers.origin;
 		if (this.corsConfig && this.corsConfig.includes(origin)) {
 			res.headers["Access-Control-Allow-Origin"] = origin;
@@ -42,25 +42,23 @@ class Rest extends Router {
 	}
 
 	query(req, res, log) {
-		if (this.log) req.log = this.log;
-		else req.log = log;
-		this[handleCors](req, res);
+		req.log = this.log || log;
 
 		if (this.logRequests) {
 			this[logRequest](req);
 			res.on("response", () => this[logResponse](req, res));
 		}
+		if (this[handleCors](req, res)) return;
 
-		const reqUrl = req.url;
-		const { method: reqMethod, path: reqPath = reqUrl } = req;
+		const { method, path = req.url } = req; // TODO: normalise req.url/req.path before Rest.query
 
 		const matched = this.routes
-			.filter(({ method }) => method === reqMethod.toLowerCase())
-			.map(route => Object.assign(route, { match: route.regex.exec(reqPath) }))
+			.filter(({ method: candidateMethod }) => candidateMethod === method.toLowerCase())
+			.map(route => Object.assign(route, { match: route.regex.exec(path) }))
 			.filter(({ match }) => match !== null)[0];
 
 		if (!matched) {
-			if (reqMethod.toLowerCase() === "options" && this.corsConfig) return res.status(204).send();
+			if (method.toLowerCase() === "options" && this.corsConfig) return res.status(204).send();
 			return res.status(404).send(); //TODO: make this customizable
 		}
 
@@ -74,11 +72,13 @@ class Rest extends Router {
 	}
 
 	getParams(match, tokens) {
+		// TODO: add wildcard support here
 		return tokens
 			.filter(token => typeof token === "object")
 			.map(({ param }) => param)
 			.reduce((acc, param, index) => {
-				acc[param] = match[index + 1];
+				if (param === "*") acc[param] = (acc[param] || []).concat([match[index + 1]]); // for wildcards we use an array
+				else acc[param] = match[index + 1];
 				return acc;
 			}, {});
 	}
