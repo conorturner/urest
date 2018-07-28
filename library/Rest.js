@@ -14,7 +14,7 @@ const logResponse = Symbol("logResponse");
 const handleCors = Symbol("handleCors");
 
 class Rest extends Router {
-	constructor({ name = defaultName, log, logRequests } = {}) {
+	constructor({ name = defaultName, log, logRequests = true } = {}) {
 		super();
 		this.name = name;
 		this.log = log;

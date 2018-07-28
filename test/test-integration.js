@@ -295,7 +295,7 @@ const runTests = (makeRequest) => {
 
 	describe("Wildcard", () => {
 
-		it.only("end of path", (done) => {
+		it("end of path", (done) => {
 
 			const method = "GET";
 
