@@ -18,7 +18,7 @@ class UReq {
 		self.log = log;
 		const { headers, path, httpMethod, body, queryStringParameters } = e;
 		Object.assign(self, {
-			headers,
+			headers: headers || {},
 			path,
 			method: httpMethod,
 			body,
