@@ -1,12 +1,15 @@
 ![logo](https://storage.googleapis.com/public-stuff/urest-logo-2.png)
 
-Lightweight, fast, zero dependency restful routing framework inspired by express and restify.
+<p align="center">
+<a href="https://www.npmjs.com/package/urest"><img src="https://img.shields.io/npm/dt/urest.svg?style=for-the-badge"></a>
+<a href="https://travis-ci.org/conorturner/urest"><img src="https://img.shields.io/travis/conorturner/urest.svg?style=for-the-badge"></a>
+<a href="https://coveralls.io/github/conorturner/urest"><img src="https://img.shields.io/coveralls/github/conorturner/urest.svg?style=for-the-badge"></a>
+<a href="/#"><img src="https://img.shields.io/github/license/conorturner/urest.svg?style=for-the-badge"></a>
+<a href="/#"><img src="https://img.shields.io/bundlephobia/min/urest.svg?style=for-the-badge"></a>
+</p>
 
-[![npm](https://img.shields.io/npm/dt/urest.svg?style=for-the-badge)](https://www.npmjs.com/package/urest)
-[![Travis](https://img.shields.io/travis/conorturner/urest.svg?style=for-the-badge)](https://travis-ci.org/conorturner/urest)
-[![Coveralls github](https://img.shields.io/coveralls/github/conorturner/urest.svg?style=for-the-badge)](https://coveralls.io/github/conorturner/urest)
-![license](https://img.shields.io/github/license/conorturner/urest.svg?style=for-the-badge)
-![npm bundle size (minified)](https://img.shields.io/bundlephobia/min/urest.svg?style=for-the-badge)
+<h3 align="center">Lightweight, fast, zero dependency restful routing framework inspired by express and restify.</h3>
+
 
 ## Install
 ```bash
