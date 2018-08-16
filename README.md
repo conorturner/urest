@@ -1,5 +1,7 @@
 ![logo](https://storage.googleapis.com/public-stuff/urest-logo-2.png)
 
+<h3 align="center">Lightweight, fast, zero dependency restful routing framework inspired by express and restify.</h3>
+
 <p align="center">
 <a href="https://www.npmjs.com/package/urest"><img src="https://img.shields.io/npm/dt/urest.svg?style=for-the-badge"></a>
 <a href="https://travis-ci.org/conorturner/urest"><img src="https://img.shields.io/travis/conorturner/urest.svg?style=for-the-badge"></a>
@@ -7,8 +9,6 @@
 <a href="/#"><img src="https://img.shields.io/github/license/conorturner/urest.svg?style=for-the-badge"></a>
 <a href="/#"><img src="https://img.shields.io/bundlephobia/min/urest.svg?style=for-the-badge"></a>
 </p>
-
-<h3 align="center">Lightweight, fast, zero dependency restful routing framework inspired by express and restify.</h3>
 
 
 ## Install
