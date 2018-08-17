@@ -384,7 +384,7 @@ const runTests = (makeRequest) => {
 
 	});
 
-	describe.only("serve", () => {
+	describe("serve", () => {
 
 		it("basic", (done) => {
 
