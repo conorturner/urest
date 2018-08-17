@@ -138,7 +138,7 @@ describe("Log", () => {
 				stream: {
 					write: (chunk) => {
 						const obj = JSON.parse(chunk);
-						console.log(obj)
+
 						expect(obj.request_id).to.be.a("string");
 						expect(obj.stack).to.be.a("string");
 						expect(obj.eid).to.be.a("string");

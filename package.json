@@ -1,6 +1,6 @@
 {
   "name": "urest",
-  "version": "4.1.1",
+  "version": "4.2.1",
   "description": "The rest frame work from the future.",
   "main": "index.js",
   "scripts": {
@@ -28,7 +28,8 @@
     "urequest": "0.0.5"
   },
   "eslintIgnore": [
-    "test/*"
+    "test/**/*",
+    "README.md"
   ],
   "eslintConfig": {
     "extends": "u"

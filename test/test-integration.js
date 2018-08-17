@@ -43,7 +43,8 @@ app.post("/headers", (req, res) => {
 });
 app.get("/wildcard/*", (req, res) => res.send(req.params));
 app.get("/wildcard-mid/*/mid", (req, res) => res.send({ success: true }));
-app.serve("/static", `${__dirname}/assets`, { index: "test.html", notFound: "test.html" });
+app.serve("/static", `${__dirname}/assets/static`, { index: "test.html", notFound: "test.html" });
+app.serve("/spa", `${__dirname}/assets/spa`, { spa: true });
 
 app.post("/multi",
 	(req, res, next) => {
@@ -383,16 +384,33 @@ const runTests = (makeRequest) => {
 
 	});
 
-	it("serve", (done) => {
+	describe.only("serve", () => {
 
-		const path = "/static/test.html";
+		it("basic", (done) => {
 
-		makeRequest({ path, json: false })
-			.then(data => {
-				expect(data.length).to.equal(123);
-				done();
-			})
-			.catch(done);
+			const path = "/static/test.html";
+
+			makeRequest({ path, json: false })
+				.then(data => {
+					expect(data.length).to.equal(123);
+					done();
+				})
+				.catch(done);
+
+		});
+
+		it("spa", (done) => {
+
+			const path = "/spa/virtual/path";
+
+			makeRequest({ path, json: false })
+				.then(data => {
+					expect(data.length).to.equal(123);
+					done();
+				})
+				.catch(done);
+
+		});
 
 	});
 

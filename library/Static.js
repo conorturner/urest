@@ -9,14 +9,14 @@ class Static {
 	}
 
 	get(path) {
-		const { notFound, index = "index.html" } = this.options;
-		const notFoundPath = pathLib.join(this.localPath, notFound);
-		const resultantPath = pathLib.join(this.localPath, path === "/" ? path + index : path);
+		const { notFound } = this.options;
+		const notFoundPath = pathLib.join(this.localPath, notFound || "");
+		const cleanPath = this.cleanPath(path);
 
 		let promise, status;
-		if (Static.exists(resultantPath)) {
+		if (Static.exists(cleanPath)) {
 			status = 200;
-			promise = Static.readFile(resultantPath);
+			promise = Static.readFile(cleanPath);
 		}
 		else if (notFound && Static.exists(notFoundPath)) {
 			status = 404;
@@ -32,9 +32,15 @@ class Static {
 			status,
 			headers: {
 				"Content-Length": buffer ? Buffer.byteLength(buffer) : 0,
-				"Content-Type": `${Static.getContentType(resultantPath)}; charset=UTF-8`
+				"Content-Type": `${Static.getContentType(cleanPath)}; charset=UTF-8`
 			}
 		}));
+	}
+
+	cleanPath (path) {
+		const { index = "index.html", spa = false } = this.options;
+		const isSpaRoot = !path.includes(".") && spa;
+		return pathLib.join(this.localPath, path === "/" || isSpaRoot ? `/${index}` : path);
 	}
 
 	static readFile(path) {
