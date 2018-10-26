@@ -1,6 +1,6 @@
 {
   "name": "urest",
-  "version": "4.2.1",
+  "version": "4.2.2",
   "description": "The rest frame work from the future.",
   "main": "index.js",
   "scripts": {
@@ -17,7 +17,7 @@
     "lambda"
   ],
   "author": "Conor Turner",
-  "license": "ISC",
+  "license": "MIT",
   "devDependencies": {
     "chai": "^4.1.2",
     "coveralls": "^3.0.1",

@@ -58,7 +58,7 @@ class Rest extends Router {
 			.filter(({ match }) => match !== null)[0];
 
 		if (!matched) {
-			if (method.toLowerCase() === "options" && this.corsConfig) return res.status(204).send();
+			if (method.toLowerCase() === "options" && this.corsConfig) return res.status(200).send();
 			return res.status(404).send(); //TODO: make this customizable
 		}
 

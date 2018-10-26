@@ -30,8 +30,6 @@ class UReq {
 		if (e) UReq.lambda(e, this, log);
 		if (req) return UReq.native(req, log);
 	}
-
-
 }
 
 module.exports = UReq;
