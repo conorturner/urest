@@ -33,9 +33,11 @@ class Rest extends Router {
 	}
 
 	[handleCors](req, res) { // TODO: have this handle the res.send and return true if handled
+		if (!this.corsConfig) return;
+
 		const origin = req.headers.origin;
 		const { origins, methods, headers } = this.corsConfig;
-		if (this.corsConfig && origins.includes(origin)) {
+		if (origins.includes(origin)) {
 			res.headers["Access-Control-Allow-Origin"] = origin;
 			res.headers["Access-Control-Allow-Methods"] = methods ? methods.join(", ") : "*";
 			res.headers["Access-Control-Allow-Headers"] = headers ? headers.join(", ") : "*";
