@@ -8,7 +8,10 @@ class UReq {
 		const parsed = url.parse(req.url);
 
 		req.headers = req.headers || {};
+
 		if (req.path === undefined) req.path = parsed.pathname;
+		if (req.path.length > 1  && req.path.endsWith("/")) req.path = req.path.slice(0, -1); // strip trailing / from paths such as this/example/
+
 		req.query = typeof req.query === "object" ? req.query : querystring.parse(parsed.query);
 
 		return req;
@@ -17,9 +20,10 @@ class UReq {
 	static lambda(e, self, log) {
 		self.log = log;
 		const { headers, path, httpMethod, body, queryStringParameters } = e;
+
 		Object.assign(self, {
 			headers: headers || {},
-			path,
+			path: path.length > 1  && path.endsWith("/") ? path.slice(0, -1) : path, // strip trailing / from paths such as this/example/
 			method: httpMethod,
 			body,
 			query: queryStringParameters === null ? {} : queryStringParameters
@@ -27,6 +31,7 @@ class UReq {
 	}
 
 	constructor({ e, req, log }) {
+		// TODO: this is terrible
 		if (e) UReq.lambda(e, this, log);
 		if (req) return UReq.native(req, log);
 	}

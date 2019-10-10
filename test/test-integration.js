@@ -63,6 +63,9 @@ const bRouter = new Router();
 
 aRouter.route("/same").get((req, res) => res.send({ value: "a" }));
 bRouter.route("/same").get((req, res) => res.send({ value: "b" }));
+bRouter.get("/", (req, res) => res.send({ success: true }));
+console.log(bRouter.routes)
+
 
 app.use(aRouter);
 app.use("/b", bRouter);
@@ -328,6 +331,24 @@ const runTests = (makeRequest) => {
 
 		});
 
+		it("root path", (done) => {
+
+			const method = "GET";
+
+			// console.log(app.routes)
+			Promise.all([
+				makeRequest({ method, path: "/b/" }),
+				makeRequest({ method, path: "/b" })
+			])
+				.then(result => {
+					console.log(result)
+					expect(result).to.deep.equal([{ success: true }, { success: true }]);
+					done();
+				})
+				.catch(done);
+
+		});
+
 	});
 
 	describe("intercept", () => {
@@ -447,8 +468,7 @@ describe("Integration", () => {
 		const tryParse = (str) => {
 			try {
 				return JSON.parse(str);
-			}
-			catch (e) {
+			} catch (e) {
 				return str;
 			}
 		};
@@ -555,8 +575,7 @@ describe("Integration", () => {
 
 
 				app.gcf().urest(mockReq, mockRes);
-			}
-			catch (e) {
+			} catch (e) {
 				reject(e);
 			}
 		});
